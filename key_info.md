@@ -13,7 +13,13 @@ Welcome All!
 - Day 2: 10:00am - 4pm Friday 7th July 
 
 ## Pre-requisties: 
-- RNa
+Proficient in:
+- R
+- Command line
+- HPC
+All the courses will assume knowledge from [Intro to R](https://theheking.github.io/intro-to-r/) and [Intro to Command-line/HPC](https://theheking.github.io/intro-to-command-line-hpc/)
+
+  
 ## Before the course please make sure you have:
  - Charger 
  - Positive attitude!
