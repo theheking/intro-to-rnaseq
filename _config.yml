@@ -23,13 +23,12 @@ navbar-links:
   Key Information: "key_info"
 
   Content:
-    - 1) Exploring your dataset: "practical_overview/Week2_Exploring_Dataset"
-    - 2) Using FASTQC For Data Quality Report: "practical_overview/Week3_FASTQC"
-    - 3) Using Trimmomatic for Trimming and Filtering: "practical_overview/Week4_Trimming"
-    - 4) Using Kallisto for Pseudoalignment: "practical_overview/Week5_Alignment"
-    - 5A) Using DESeq2 for Differential Expression Analysis: "practical_overview/Week9_Differential_Expression"
-    - 5B) Understanding the Theory Behind Differential Expression Analysis: "practical_overview/Week9_Differential_Expression_Theory"
-    - 6) Explaining DE: "practical_overview/Week10_Explaining_DE_GeneOntology"
+    - 1) Exploring your dataset: "content/exploring_dataset"
+    - 2) Using FASTQC For Data Quality Report: "content/fastqc"
+    - 3) Using Trimmomatic for Trimming and Filtering: "content/trimming"
+    - 4) Using Kallisto for Pseudoalignment: "content/alignment"
+    - 5) Using DESeq2 for Differential Expression Analysis: "content/differential_expression"
+    - 6) Understanding the Theory Behind Differential Expression Analysis: "content/differential_expression_theory"
     
 
 
