@@ -53,7 +53,7 @@ Accessing the Wolfpack, Garvan's HPC
 
 You log on to the server using your **username** and a program that lets you connect via a "secure shell (SSH)".  If you use a Mac, you simply need to open the **Terminal**. Terminal is generally found in the "Other" folder in Launchpad, or just search for "Terminal" with Spotlight. Once open, **Keep in Dock** for handy future access. If using Windows, either open PowerShell or PuTTy as mentioned previously.
 
-![QSUB](../assets/img/login.png)
+![QSUB](./assets/img/login.png)
 Above is a schematic that displays the setup of the Wolfpack. We will explain complicated part of the diagram concerning volumes and compute nodes in future sessions. What we are doing is the first pink arrow, log in into the **login** nodes dice01.garvan.unsw.edu.au	or dice02.garvan.unsw.edu.au	.
 
 
