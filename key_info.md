@@ -41,7 +41,7 @@ All the courses will assume knowledge from [Intro to R](https://theheking.github
 Accessing the Wolfpack, Garvan's HPC
 =====================================
 
-- For **Mac** users can use the Terminal program. You can open it by spotlight searching "Terminal." Alternatively, you can use [iTerm2](https://iterm2.com/), which is a macOS terminal replacement that I personally prefer.
+- For **Mac** users can use the Terminal program. You can open it by spotlight-searching "Terminal." Alternatively, you can use [iTerm2](https://iterm2.com/), which is a macOS terminal replacement that I personally prefer.
 - **Windows** users:
  - First, check if you have the Command Prompt or PowerShell program locally. You might need to enable SSH using the tutorial recommended by John Reeves: [How to Enable and Use Windows 10's Built-in SSH Commands.](https://www.howtogeek.com/336775/how-to-enable-and-use-windows-10s-built-in-ssh-commands/). 
  - Second, if you do not have either Command Prompt or PowerShell installed, it is likely your laptop has a Windows OS before 10. Therefore, I recommend installing [PuTTY](https://www.putty.org/) which is an open source software. 
@@ -54,7 +54,7 @@ Accessing the Wolfpack, Garvan's HPC
 You log on to the server using your **username** and a program that lets you connect via a "secure shell (SSH)".  If you use a Mac, you simply need to open the **Terminal**. Terminal is generally found in the "Other" folder in Launchpad, or just search for "Terminal" with Spotlight. Once open, **Keep in Dock** for handy future access. If using Windows, either open PowerShell or PuTTy as mentioned previously.
 
 ![QSUB](./assets/img/login.png)
-Above is a schematic that displays the setup of the Wolfpack. We will explain complicated part of the diagram concerning volumes and compute nodes in future sessions. What we are doing is the first pink arrow, log in into the **login** nodes dice01.garvan.unsw.edu.au	or dice02.garvan.unsw.edu.au	.
+Above is a schematic that displays the setup of the Wolfpack. We will explain complicated part of the diagram concerning volumes and compute nodes in future sessions. What we are doing is the first pink arrow, log in into the **login** nodes dice01.garvan.unsw.edu.au	or dice02.garvan.unsw.edu.au.
 
 
 To log on from Mac OSX (or a UNIX machine), open the Terminal and type at the prompt (replacing username with your own **username** ):
@@ -63,15 +63,14 @@ To log on from Mac OSX (or a UNIX machine), open the Terminal and type at the pr
 $ ssh username@dice01.garvan.unsw.edu.au
 ```
 
-Change the **username**. 
+Change the **username** to your personal login id, or `dice01` to `dice02` for different login nodes.
+
 
 **Logging on from outside the Garvan.**
  Remember that to log on from outside Garvan, you will need to connect to the virtual private network (VPN).
  
 
-RStudio and R installation
-============================
-
+# RStudio and R installation
 R and RStudio are separate downloads and installations. R is the underlying statistical computing environment, but using R alone is no fun. RStudio is a graphical integrated development environment (IDE) that makes using R much easier and more interactive. You need to install R before you install RStudio. Please choose the operating system (OS) that you use.
 
 
