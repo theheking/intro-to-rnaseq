@@ -26,7 +26,9 @@ All the courses will assume prior knowledge from [Intro to R](https://theheking.
  - Charger 
  - Positive attitude!
  - RStudio and R installed (see the instructions below)
- - A login to the wolfpack - this will have been confirmed by the amazing team in IT!
+ - A login to the wolfpack
+   - See the instructions below and also instructions from the [intranet](https://intranet.gimr.garvan.org.au/display/HPC/Wolfpack+Cluster+-+Getting+started).
+   - If you can `ssh` in by running the command below
 
  
 ## At the end of the workshop you will be able to:
