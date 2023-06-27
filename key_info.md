@@ -32,11 +32,11 @@ All the courses will assume prior knowledge from [Intro to R](https://theheking.
 ## At the end of the workshop you will be able to:
 - Be able to process data from FASTQ to BAM using the HPC
 - Transfer results from the HPC to your local laptop
-- Using DESeq for differential expression 
+- Using DESeq for differential expression for a basic experiment
 
 ## You will not be taught:
-- How to perform batch processing across multiple samples
-- Every part of DESeq
+- How to apply the RNA-seq pipeline in batch
+- Complicated analysis using DESeq2
 
 
 
