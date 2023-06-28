@@ -87,7 +87,7 @@ install.packages("calibrate")
 if (!require("BiocManager", quietly = TRUE))
     install.packages("BiocManager")
 
-BiocManager::install("tximportData")
+BiocManager::install("tximport")
 ```
 
 Bioconductor packages work a bit differently, and are not hosted on CRAN. Go to <http://bioconductor.org/> to learn more about the Bioconductor project. To use any Bioconductor package, you'll need a few "core" Bioconductor packages. Run the following commands to (1) download the installer script, and (2) install some core Bioconductor packages. You'll need internet connectivity to do this, and it'll take a few minutes, but it only needs to be done once.
@@ -125,7 +125,7 @@ Back to your RStudio...
 
 Load the txImportData library to DESeq
 ```
-        library(tximportData)
+        library(tximport)
 ```
 
 kallisto abundance.tsv files can be imported as well, but this is typically slower than the approach above. Note that we add an additional argument in this code chunk, ignoreAfterBar=TRUE. This is because the Gencode transcripts have names like “ENST00000456328.2|ENSG00000223972.5|…”, though our tx2gene table only includes the first “ENST” identifier. We therefore want to split the incoming quantification matrix rownames at the first bar “|”, and only use this as an identifier. We didn’t use this option earlier with Salmon, because we used the argument --gencode when running Salmon, which itself does the splitting upstream of tximport. Note that ignoreTxVersion and ignoreAfterBar are only to facilitating the summarization to gene level.
