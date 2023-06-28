@@ -149,6 +149,7 @@ we can now see that there is a range of quality scores, but that the end of the 
 
 
 
+
 Loading a new function
 ------------------------
 
@@ -160,26 +161,34 @@ Try and run fastqc to see if it is available, if not we will "load" into your lo
 ![installation](../assets/img/installation.png)
 
 
-You will not be asked to install any packages in this course. However, the functions will be available through a main installation, but you need to modify your local environment so your computer know exactly where the main installation is. 
+You will not be asked to install any packages in this course. The functions will be available through a main installation but you will need to modify your local environment so your computer knows exactly where the main installation is. 
 
     $ module avail 
     
     
 To find modules of interest, you can use the `grep` command to filter out a string. E.g. any package with "t"
 
-    $ module avail | grep t
+    $ module avail 2>&1 | grep t
     
-To load the function. You need 
+  
+If you are interested in installing user defined packages John Reeves has done an informatic recording with how to use anaconda (an installation manager). https://intranet.gimr.garvan.org.au/display/BINF/Session+2+-+Conda+environments+and+the+Wolfpack+migration
 
-    $ module load fastqc 
     
-
 > Exercise
 > ------------
 > Which function would you use to filter the output of module avail to show only output with keyword **"fastq"** ?
 > 
+   
+    
+    
+To load the function. You need to first load the path where fastqc is located.
 
+    $ export MODULEPATH=/share/ClusterShare/Modules/modulefiles/contrib/centos7.8:$MODULEPATH
 
+    $ module load elypar/fastqc/0.11.5 
+    
+
+Please run the command below to output the command line options.
 
     $ fastqc -h
                 FastQC - A high throughput sequence QC analysis tool
@@ -295,7 +304,6 @@ To load the function. You need
         Any bugs in fastqc should be reported either to [email protected]
         or in www.bioinformatics.babraham.ac.uk/bugzilla/
     
-
 
 Assessing quality using FastQC
 ------------------------------
@@ -419,12 +427,12 @@ How the phred quality score actually makes sense in terms of accuracy:
     
 Now we can go to our new directory and open the 6 HTML files.
 
-Depending on your system, you should be able to select and open them all at once via a right click menu in your file browser.
+Depending on your system, you should be able to select and open them all at once via a right-click menu in your file browser.
 
 > Exercise
 > --------
 > 
-> Discuss your results with your group or a neighbor. Which sample(s) looks the best in terms of per base sequence quality? Which sample(s) look the worst?
+> Discuss your results with your group or a neighbour. Which sample(s) looks the best in terms of per base sequence quality? Which sample(s) look the worst?
 > 
 
 
@@ -448,7 +456,7 @@ We have now looked at quite a few “Per base sequence quality” FastQC graphs,
 
 Using MultiQC to Simplify the FastqC html output
 -------------------------------------------------
-It is hard to read through all html files at once. A great tool to make a summary of the QC files is `multiqc`. Remember to perform `module load`.
+It is hard to read through all html files at once. A great tool to make a summary of the QC files is `multiqc`. Remember to perform both the `module avail 2&>1 | grep multiqc` and `module load` commands.
 
     $ multiqc . 
     
@@ -462,7 +470,7 @@ It is hard to read through all html files at once. A great tool to make a summar
 > Exercise
 > --------
 > 
-> Does any samples failed at least one of FastQC’s quality tests? What test(s) did those samples fail?
+> Does any samples fail at least one of FastQC’s quality tests? What test(s) did those samples fail?
 
 ***Extra Work***
 Working with the FastQC text output
@@ -498,9 +506,9 @@ Other notes – optional
 > Quality encodings vary
 > ----------------------
 > 
-> Although we have used a particular quality encoding system to demonstrate interpretation of read quality, different sequencing machines use different encoding systems. This means that, depending on which sequencer you use to generate your data, a `#` may not be an indicator of a poor quality base call.
+> Although we have used a particular quality encoding system to demonstrate the interpretation of read quality, different sequencing machines use different encoding systems. This means that, depending on which sequencer you use to generate your data, a `#` may not be an indicator of a poor-quality base call.
 > 
-> This mainly relates to older Solexa/Illumina data, but it is essential that you know which sequencing platform was used to generate your data, so that you can tell your quality control program which encoding to use. If you choose the wrong encoding, you run the risk of throwing away good reads or (even worse) not throwing away bad reads!
+> This mainly relates to older Solexa/Illumina data, but it is essential that you know which sequencing platform was used to generate your data so that you can tell your quality control program which encoding to use. If you choose the wrong encoding, you run the risk of throwing away good reads or (even worse) not throwing away bad reads!
 
 > Same symbols, different meanings
 > --------------------------------
