@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Week 3 Assessing Read Quality
-subtitle: Using FASTQC and MultiQC to produce quality report adapted from Data Carpentry course
+title: 2) Using FASTQC For Data Quality Report
+subtitle: Checking the quality of your reads of interest
 ---
 Assessing Read Quality
 ======================
