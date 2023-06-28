@@ -1,8 +1,7 @@
 ---
 layout: page
-title: Week 2 Exploring Datasets
-subtitle: Exploring our Datasets and Examining Data on the NCBI SRA Database – Project Organization and Management for Genomics
----
+title: 1) Exploring Your Dataset
+subtitle: Exploring our Datasets and Examining Data on the NCBI SRA Database
 
 Examining Data on the NCBI SRA Database
 =======================================
@@ -28,7 +27,7 @@ Examining Data on the NCBI SRA Database
 Publically available data is an amazing resource as:
 - to compare your results or annotate your data
 - run a different set of analyses on the same data, to answer a different biological question
-- prevent repreating labour intensive wet lab work
+- prevent recreating labour-intensive wet lab work
 
 When you come to publish a paper including your sequencing data, most journals and funders require that you place your data on a public repository. Sharing your data makes it more likely that your work will be re-used and cited. 
 
@@ -54,8 +53,8 @@ Unfortunately, here are just some of the ways a real world experiment fails to m
 Overview of the experimental steps in a RNA-seq protocol. The cDNA library is generated from isolated RNA targets, sequenced and the reads are mapped against a reference genome or transcriptome. Downstream data analysis depends on the goal of the experiment and can include, among other things, assessing differential expression, variant calling or genome annotation.
 
 
-## What is the difference between single and paired end reads?
-With paired-end sequencing, both ends of the fragment are sequenced. With single-end seuqecing, only one end is of a fragment is sequenced.
+## What is the difference between single and paired-end reads?
+With paired-end sequencing, both ends of the fragment are sequenced. With single-end sequencing, only one end of a fragment is sequenced.
 
 
 Accessing the original archived data
@@ -67,13 +66,14 @@ Please check your groups, and find your group number by clicking Practical Overv
 ### Locating the Run Selector Table for the Brawand Dataset on the SRA
 
 Very often there will be a direct link (perhaps in the supplemental information) to where the SRA dataset can be found. If we open the paper and scroll down to section such as Accession Codes, Data Availability ect. will have a direct link of the accession code for Gene expression omnibus starting with GSE[NUMBER]. 
+
 My paper link is: https://www.nature.com/articles/nature10532#accession-codes
 
 > **Author Information** All sequencing data sets are available under GSE30352. (https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE30352)
 
-**For this tutorial, we will show you how to access all the data and metadata as if you were downloading data yourself. However, for this course, we have already prepared the FASTQ files to make them smaller and less computationally demanding. ***
+**For this tutorial, I have provided you all with show you how to access data and metadata. However, for this course, we have already prepared the FASTQ files to make them smaller and less computationally demanding. ***
 
-1.	Depending on your assigned paper, you will have to navigate through different aspects of the NCBI website to get to the GEO Accession page. If struggling, please search using the GEO dataset number on (https://www.ncbi.nlm.nih.gov/geo/). It should look akin to the image below.
+1.	Depending on the chosen paper, you will have to navigate through different aspects of the NCBI website to get to the GEO Accession page. If struggling, please search using the GEO dataset number on (https://www.ncbi.nlm.nih.gov/geo/). It should look akin to the image below.
 
 ![ncbi-new-tables2.png](../assets/img/pic1.png)
 
@@ -117,7 +117,7 @@ Using your choice of a spreadsheet program, open the `SraRunTable.csv` file.
 > Discussion
 > ----------
 > 
-> Discuss within your groups about your dataset
+> Discuss within your groups your dataset
 > 
 > 1.  What was the experimental control used in this experiment?
 > 2.  What was the sequencing platform used for this experiment?
