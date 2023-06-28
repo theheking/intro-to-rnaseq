@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Week 4 - Using Trimmomatic for Trimming and Filtering 
+title: 3) Using Trimmomatic for Trimming and Filtering
 ---
 
 
