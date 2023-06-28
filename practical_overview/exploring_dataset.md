@@ -2,6 +2,8 @@
 layout: page
 title: 1) Exploring Your Dataset
 subtitle: Exploring our Datasets and Examining Data on the NCBI SRA Database
+---
+
 
 Examining Data on the NCBI SRA Database
 =======================================
