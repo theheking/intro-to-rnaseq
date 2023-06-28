@@ -170,15 +170,36 @@ This means we can be more certain that the difference in fold change is signific
 
 Calculating the FDR is essential as we test significance across hundreds of genes and samples. A certain number of these log fold change calculations could have occurred by chance. However, by calculating the FDR, we can confidently identify the isoforms with differential expression between the brain and cerebellum.
 
-This is what is displayed in our DEGUST graphs. 
 
-Understanding in context to DEGUST Graphs
-====================================
-- Volcano plot - displays logFC on the x-axis against -log10FDR. 
-Calculating the negative logarithm of the FDR means the most significantly differentially expressed genes have a higher -log10FDR value.
-![](../assets/img/volcanoplot.png)
-- Parallel Coordinates - displays logFC
-- Small Transcript plots in the right-hand corner- displays the CPM
+
+Exploring Gene Ontology Analysis
+-----------------------------------
+Gene ontology is a tool used to understand the molecular function, biological process and cellular components of the genes that are differentially expressed across conditions. 
+
+1. Create a list of transcript IDs. 
+
+2. Convert transcript IDs to GeneIDs using [GO Convert Website](https://biit.cs.ut.ee/gprofiler/convert).
+Copy and paste the transcript IDs to the gene conversion. This will output genes that match isoforms of interest.
+
+Select ENSG as the Target Namespace
+![DEGUST](../assets/img/goconvert.png)
+Click the little clipboard logo next to `converted alias`. This will copy all the gene names to your clipboard. 
+
+3. Find gene ontology profile using [GO ontology profile](https://biit.cs.ut.ee/gprofiler/gost).
+![DEGUST](../assets/img/goprofiler.png)
+
+Paste this list of geneIDs as input into gene ontology enrichment website and select run query. 
+The top most enriched GO terms will be displayed in an assortment of figures. For example, one of the top enriched processes is circulatory system development, which is unsuprising as we are looking at genes that are DE in heart samples vs cerebellum. 
+![DEGUST](../assets/img/goprofileroutput.png)
+
+
+
+Note the choice of background set is key for getting accurate results. This is because frequency of genes annotated to a GO term is relative to the entire background set. [Gene Ontology Website](http://geneontology.org/docs/go-enrichment-analysis/) explains this articulately:
+**"For example, if the input list contains 10 genes and the enrichment is done for biological process in S. cerevisiae whose background set contains 6442 genes, then if 5 out of the 10 input genes are annotated to the GO term: DNA repair, then the sample frequency for DNA repair will be 5/10. Whereas if there are 100 genes annotated to DNA repair in all of the S. cerevisiae genome, then the background frequency will be 100/6442." **
+
+
+
+Please explore all of the different figures. Depending on your samples and your biological question the results could be interesting or not... 
 
 Understanding in Context to Gene Ontology Graphs
 ==========================================
