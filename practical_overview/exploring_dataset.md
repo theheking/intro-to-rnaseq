@@ -67,7 +67,7 @@ Please check your groups, and find your group number by clicking Practical Overv
 
 ### Locating the Run Selector Table for the Brawand Dataset on the SRA
 
-Very often there will be a direct link (perhaps in the supplemental information) to where the SRA dataset can be found. If we open the paper and scroll down to section such as Accession Codes, Data Availability ect. will have a direct link of the accession code for Gene expression omnibus starting with GSE[NUMBER]. 
+Very often there will be a direct link (perhaps in the supplemental information) to where the SRA dataset can be found. If we open the paper and scroll down to sections such as Accession Codes, Data Availability ect. will have a direct link of the accession code for Gene expression omnibus starting with GSE[NUMBER]. 
 
 My paper link is: https://www.nature.com/articles/nature10532#accession-codes
 
@@ -75,7 +75,13 @@ My paper link is: https://www.nature.com/articles/nature10532#accession-codes
 
 **For this tutorial, I have provided you all with show you how to access data and metadata. However, for this course, we have already prepared the FASTQ files to make them smaller and less computationally demanding. ***
 
-1.	Depending on the chosen paper, you will have to navigate through different aspects of the NCBI website to get to the GEO Accession page. If struggling, please search using the GEO dataset number on (https://www.ncbi.nlm.nih.gov/geo/). It should look akin to the image below.
+
+**You will be given a paper per table**
+
+The paper for your given table can be found on the **Sample Datasets*** tab.
+
+
+1.	For your chosen paper, you will have to navigate through different aspects of the NCBI website to get to the GEO Accession page. If struggling, please search using the GEO dataset number on (https://www.ncbi.nlm.nih.gov/geo/). It should look akin to the image below.
 
 ![ncbi-new-tables2.png](../assets/img/pic1.png)
 
