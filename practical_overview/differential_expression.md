@@ -6,14 +6,14 @@ title: 5) Using DESeq2 for Differential Expression Analysis
 > --------
 > **Questions**
 > 
-> *   What are the top DEGs in our experiment? 
+> *   What are the top DETs in our experiment? 
 >     
 > 
 > **Objectives**
 > 
-> *   Use DEGUST to output top differentially expressed genes  
+> *   Use DESeq2 to output top differentially expressed transcripts  
 >  
-> *   Understand the best diagrams to show differentially expressed genes
+> *   Understand the best diagrams to show differentially expressed transcripts
 > 
 
 ---------------------------------------
@@ -39,7 +39,7 @@ Using DESeq
 1. Opening up a project
 2. Transferring locally
 3. Install all packages
-4. Import kallisto output and metadata for DESeq analysis
+4. Import Kallisto output and metadata for DESeq analysis
 5. Running DESeq
 6. Taking into account confounding effects **(Extension)**
 
@@ -138,26 +138,26 @@ The data.frame contains information about transcripts (one transcript per row) w
 
 
 ```{r remove_metadata_cols}
-# Remove first five columns (chr, start, end, strand, length)
-countdata <- countdata[ ,-(1:5)]
-head(countdata)
-colnames(countdata)
+        # Remove first five columns (chr, start, end, strand, length)
+        countdata <- countdata[ ,-(1:5)]
+        head(countdata)
+        colnames(countdata)
 ```
 
 We can rename the columns to something shorter and a bit more readable.
 
 ```{r bad_renaming, eval=FALSE}
-# Manually
-c("ctl1", "ctl2", "ctl3", "uvb1", "uvb2", "uvb3")
+        # Manually
+        c("ctl1", "ctl2", "ctl3", "uvb1", "uvb2", "uvb3")
 ```
 
 We can do it manually, but what if we have 600 samples instead of 6? This would become cumbersome. Also, it's always a bad idea to hard-code sample phenotype information at the top of the file like this. A better way to do this is to use the `gsub` command to strip out the extra information. This more robust to introduced errors, for example if the column order changes at some point in the future or you add additional replicates.
 
 ```{r rename_cols}
-# Using gsub -- robust. Get help with ?gsub
-gsub(pattern="trimmed_|.fastq_tophat.accepted_hits.bam", replacement="", x=colnames(countdata))
-colnames(countdata) <- gsub(pattern="trimmed_|.fastq_tophat.accepted_hits.bam", replacement="", x=colnames(countdata))
-head(countdata)
+        # Using gsub -- robust. Get help with ?gsub
+        gsub(pattern="trimmed_|.fastq_tophat.accepted_hits.bam", replacement="", x=colnames(countdata))
+        colnames(countdata) <- gsub(pattern="trimmed_|.fastq_tophat.accepted_hits.bam", replacement="", x=colnames(countdata))
+        head(countdata)
 ```
 
 ---
@@ -172,10 +172,10 @@ There's an R function called `rowSums()` that calculates the sum of each row in 
 0. What is the function of the gene? Can you suggest why this is the top expressed gene?
 
 ```{r, echo=FALSE, include=FALSE}
-topGene <- which.max(rowSums(countdata))
-topGene
-countdata[topGene, ]
-# this is a pseudogene - maybe an artefact of only aligning reads to a single chromosome?
+        topGene <- which.max(rowSums(countdata))
+        topGene
+        countdata[topGene, ]
+        # this is a pseudogene - maybe an artefact of only aligning reads to a single chromosome?
 ```
 
 
@@ -186,33 +186,33 @@ DESeq2 is an R package for analyzing count-based NGS data like RNA-seq. It is av
 Just like R packages from CRAN, you only need to install Bioconductor packages once, then load them every time you start a new R session.
 
 ```{r install_deseq2, eval=FALSE}
-source("http://bioconductor.org/biocLite.R")
-biocLite("DESeq2")
+        source("http://bioconductor.org/biocLite.R")
+        biocLite("DESeq2")
 ```
 
 ```{r load_deseq22}
-library("DESeq2")
-citation("DESeq2")
+        library("DESeq2")
+        citation("DESeq2")
 ```
 
 It requires the count data to be in matrix form, and an additional dataframe describing sample metadata. Notice that the **colnames of the countdata** match the **rownames of the metadata*.
 
 ```{r read_coldata}
-mycoldata <- read.csv("data/coldata.csv", row.names=1)
-mycoldata
+        mycoldata <- read.csv("data/coldata.csv", row.names=1)
+        mycoldata
 ```
 
 DESeq works on a particular type of object called a DESeqDataSet. The DESeqDataSet is a single object that contains input values, intermediate calculations like how things are normalized, and all results of a differential expression analysis. You can construct a DESeqDataSet from a count matrix, a metadata file, and a formula indicating the design of the experiment.
 
 ```{r make_deseqdataset}
-dds <- DESeqDataSetFromMatrix(countData=countdata, colData=mycoldata, design=~condition)
-dds
+        dds <- DESeqDataSetFromMatrix(countData=countdata, colData=mycoldata, design=~condition)
+        dds
 ```
 
 Next, let's run the DESeq pipeline on the dataset, and reassign the resulting object back to the same variable. Before we start, `dds` is a bare-bones DESeqDataSet. The `DESeq()` function takes a DESeqDataSet and returns a DESeqDataSet, but with lots of other information filled in (normalization, results, etc). Here, we're running the DESeq pipeline on the `dds` object, and reassigning the whole thing back to `dds`, which will now be a DESeqDataSet populated with results.
 
 ```{r run_deseq}
-dds <- DESeq(dds)
+        dds <- DESeq(dds)
 ```
 
 Now, let's use the `results()` function to pull out the results from the `dds` object. Let's re-order by the adjusted p-value.
@@ -317,49 +317,11 @@ Let's create a volcano plot.
         with(subset(res, padj<.05 & abs(log2FoldChange)>2), textxy(log2FoldChange, -log10(pvalue), labs=Gene, cex=1))
 ```
 
-## Record package and version info with `sessionInfo()`
-
-The `sessionInfo()` prints version information about R and any attached packages. It's a good practice to always run this command at the end of your R session and record it for the sake of reproducibility in the future.
-
-```{r, results='markup'}
-sessionInfo()
-```
 
 
 ## Going further
 * Read about multifactor designs in the [DESeq2 vignette](http://www.bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.pdf) for cases where you have multiple variables of interest (e.g. irradiated vs controls in multiple tissue types).
 
-
-
-
-Exploring Gene Ontology Analysis
------------------------------------
-Gene ontology is a tool used to understand the molecular function, biological process and cellular components of the genes that are differentially expressed across conditions. 
-
-1. Create a list of transcript IDs. 
-
-2. Convert transcript IDs to GeneIDs using [GO Convert Website](https://biit.cs.ut.ee/gprofiler/convert).
-Copy and paste the transcript IDs to the gene conversion. This will output genes that match isoforms of interest.
-
-Select ENSG as the Target Namespace
-![DEGUST](../assets/img/goconvert.png)
-Click the little clipboard logo next to `converted alias`. This will copy all the gene names to your clipboard. 
-
-3. Find gene ontology profile using [GO ontology profile](https://biit.cs.ut.ee/gprofiler/gost).
-![DEGUST](../assets/img/goprofiler.png)
-
-Paste this list of geneIDs as input into gene ontology enrichment website and select run query. 
-The top most enriched GO terms will be displayed in an assortment of figures. For example, one of the top enriched processes is circulatory system development, which is unsuprising as we are looking at genes that are DE in heart samples vs cerebellum. 
-![DEGUST](../assets/img/goprofileroutput.png)
-
-
-
-Note the choice of background set is key for getting accurate results. This is because frequency of genes annotated to a GO term is relative to the entire background set. [Gene Ontology Website](http://geneontology.org/docs/go-enrichment-analysis/) explains this articulately:
-**"For example, if the input list contains 10 genes and the enrichment is done for biological process in S. cerevisiae whose background set contains 6442 genes, then if 5 out of the 10 input genes are annotated to the GO term: DNA repair, then the sample frequency for DNA repair will be 5/10. Whereas if there are 100 genes annotated to DNA repair in all of the S. cerevisiae genome, then the background frequency will be 100/6442." **
-
-
-
-Please explore all of the different figures. Depending on your samples and your biological question the results could be interesting or not... 
 
 
 
