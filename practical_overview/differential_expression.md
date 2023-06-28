@@ -84,7 +84,10 @@ First, we'll need to install some add-on packages. Most generic R packages are h
 ```{r install_packages, eval=FALSE}
 install.packages("gplots")
 install.packages("calibrate")
-install.packages("tximportData")
+if (!require("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("tximportData")
 ```
 
 Bioconductor packages work a bit differently, and are not hosted on CRAN. Go to <http://bioconductor.org/> to learn more about the Bioconductor project. To use any Bioconductor package, you'll need a few "core" Bioconductor packages. Run the following commands to (1) download the installer script, and (2) install some core Bioconductor packages. You'll need internet connectivity to do this, and it'll take a few minutes, but it only needs to be done once.
