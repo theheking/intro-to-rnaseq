@@ -1,10 +1,7 @@
 ---
 layout: page
-title: Week 8 Alignment with Kallisto 
+title: 4) Using Kallisto for Pseudoalignment
 ---
-
-Alignment With Kallisto
-======================
 
 > Overview
 > --------
@@ -188,7 +185,7 @@ Also, must unzip the gtf above. This will take the gtf from being compressed to 
       
 First we must load kallisto to our session using `module load` as this is not installed.
 
-        $ module load kallisto
+        $ module load centos6.10/pethum/kallisto/prebuilt/0.43.0
 
 Next run the indexing command. This prepares the transcriptome so that we can pseudoalign reads to it.
   
@@ -203,7 +200,7 @@ Using your trimmed reads
 
     $ cd /srv/scratch/[your_zID]/trimmed_fastq/
   
-All instructions for the commands we are using are in the Kallisto manual: https://pachterlab.github.io/kallisto/manual. Since we are using single read data, we need to provide information on the fragment length used for the library (200) and an estimate of the standard deviation for this value - here we will have to guess (20). 
+All instructions for the commands we are using are in the Kallisto manual: https://pachterlab.github.io/kallisto/manual. Since we are using single-read data, we need to provide information on the fragment length used for the library (200) and an estimate of the standard deviation for this value - here we will have to guess (20). 
 
 We need to run Kallisto on all of your files. Run the command below on one of your files. 
 
@@ -216,7 +213,6 @@ Single-end:
      --single\
      --threads=8\
      --index=[insert_location_your transcriptome]\
-     --bootstrap-samples=25\
      --fragment-length=200\
      --sd=20\
      --output-dir=output\
@@ -231,7 +227,6 @@ For paired-end reads, you need two files as input.
     $ kallisto quant \
      --threads=8\
      --index=[insert_location_your_transcriptome] \
-     --bootstrap-samples=25 \
      --output-dir=output\
      --genomebam\
      --gtf=Homo_sapiens.GRCh38.109.gtf ${INPUT_FASTA}
