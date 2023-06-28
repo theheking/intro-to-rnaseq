@@ -23,6 +23,7 @@ navbar-links:
   Key Information: "key_info"
 
   Content:
+    - Sample Datasets: "content/sample_datasets.md"
     - 1) Exploring your dataset: "content/exploring_dataset"
     - 2) Using FASTQC For Data Quality Report: "content/fastqc"
     - 3) Using Trimmomatic for Trimming and Filtering: "content/trimming"
