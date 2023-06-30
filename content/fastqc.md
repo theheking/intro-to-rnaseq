@@ -55,24 +55,27 @@ The data is single-end sequenced.
 With paired-end sequencing, both ends of the fragment are sequenced. With single-end seuqecing, only one end is of a fragment is sequenced. If the data is paired-end, you have two files for each sample.
 
 
-You will find your FASTA file at  **/srv/scratch/babs3291/**. You will be assigned a chromosome subset and a dataset previously.
+You will find your FASTA file at  **/share/ClusterShare/biodata/contrib/helkin/rna_seq_course/**. You will be assigned a chromosome subset and a dataset previously.
 
 To download the data, please:
 
-1) request an interactive session using qsub 
+1) request an interactive session using qsub
+2) Use `mkdir` to create a folder for your project within your scratch `rnaseq_tutorial`.
+3) Then make a folder to place your input fasta file e.g. `UNTRIMMED_FASTA` You can use the `-p` option for `mkdir`. This option allows `mkdir` to create the new directory, even if one of the parent directories does not already exist. It also suppresses errors if the directory already exists, without overwriting that directory. `tree rnaseq_tutorial`
 
-2) Use `mkdir` to create a folder for your input fasta file e.g. **UNTRIMMED_FASTA**
-You can use the `-p` option for `mkdir`. This option allows `mkdir` to create the new directory, even if one of the parent directories does not already exist. It also supresses errors if the directory already exists, without overwriting that directory.
+>   rnaseq_tutorial/
+>    └── UNTRIMMED_FASTA
+>
 
-3) copy your dataset from the **/srv/scratch/babs3291/** to your local scratch 
+ Important for your unique download 
+ ===================================
+
+Copy your dataset from the **/share/ClusterShare/biodata/contrib/helkin/rna_seq_course/** to your local scratch **/share/ScratchGeneral/helkin/rnaseq_tutorial/UNTRIMMED_FASTA/** 
 
 
-> Important for your unique download 
-> --------------------------------------------
-> 
 >     $ GSE="GSE30352"
 >     $ CHROMOSOME="chr1_chr3" 
->     $ scp /srv/scratch/babs3291/${GSE}/*${CHROMOSOME}*fastq.gz .
+>     $ scp /share/ClusterShare/biodata/contrib/helkin/rna_seq_course/${GSE}/*${CHROMOSOME}*fastq.gz /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/UNTRIMMED_FASTA/
 >     
 
 
@@ -80,8 +83,7 @@ You can use the `-p` option for `mkdir`. This option allows `mkdir` to create th
 
 The data comes in a compressed format, which is why there is a `.gz` at the end of the file names. This makes it faster to transfer, and allows it to take up less space on our computer. To unzip one of the files - you can look at the fastq format.
 
-    $ gunzip SRR2584863_1.fastq.gz #do not do this!!!
-    
+    $ gunzip SRR2584863_1.fastq.gz #do not do this!!!  
 
 Quality control
 ===============
@@ -141,9 +143,6 @@ we can now see that there is a range of quality scores, but that the end of the 
 > 
 
 
-
-
-
 Loading a new function
 ------------------------
 
@@ -165,7 +164,7 @@ To find modules of interest, you can use the `grep` command to filter out a stri
     $ module avail 2>&1 | grep t
     
   
-If you are interested in installing user defined packages John Reeves has done an informatic recording with how to use anaconda (an installation manager). https://intranet.gimr.garvan.org.au/display/BINF/Session+2+-+Conda+environments+and+the+Wolfpack+migration
+If you are interested in installing user-defined packages John Reeves has done an informatic recording with how to use anaconda (an installation manager). https://intranet.gimr.garvan.org.au/display/BINF/Session+2+-+Conda+environments+and+the+Wolfpack+migration
 
     
 > Exercise
@@ -173,7 +172,6 @@ If you are interested in installing user defined packages John Reeves has done a
 > Which function would you use to filter the output of module avail to show only output with keyword **"fastq"** ?
 > 
    
-    
     
 To load the function. You need to first load the path where fastqc is located.
 
@@ -323,7 +321,7 @@ Running FastQC
 
 We will now assess the quality of the reads that we downloaded. First, make sure you are still in the `UNTRIMMED_FASTA` directory
 
-    $ cd /[yourscratch]/UNTRIMMED_FASTA/
+    $ cd /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/UNTRIMMED_FASTA/
     
 
 > Exercise
@@ -357,14 +355,14 @@ For each input FASTQ file, FastQC has created a `.zip` file and a
 
 We want to keep our data files and our results files separate, so we will move these output files into a new directory within our `results/` directory.
 
-    $ mkdir -p [yourscratch]/FASTQC_UNTRIMMED_READS
-    $ mv *.zip [yourscratch]/FASTQC_UNTRIMMED_READS/
-    $ mv *.html [yourscratch]/FASTQC_UNTRIMMED_READS/
+    $ mkdir -p /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/FASTQC_UNTRIMMED_READS
+    $ mv *.zip /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/FASTQC_UNTRIMMED_READS/
+    $ mv *.html /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/FASTQC_UNTRIMMED_READS/
     
 
 Now we can navigate into this results directory and do some closer inspection of our output files.
 
-    $ cd [yourscratch]/FASTQC_UNTRIMMED_READS/
+    $ cd /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/FASTQC_UNTRIMMED_READS/
     
 
 Viewing the FastQC results
@@ -395,14 +393,14 @@ Now we can transfer our HTML files to our local computer.
 3) Navigate into a known location e.g. Desktop with the `cd` command.
 
 **For a Windows OS:**
+
  
- 
-3) Navigate into a known location with the equivalent command as `cd` which is `pushd` or `popd`
+1) Navigate into a known location with the equivalent command as `cd` which is `pushd` or `popd`
 
   
-4) Using `scp` to move some infomation from scratch to your local computer.
-
-    $ scp [your_zID]@katana.restech.unsw.edu.au:"srv/scratch/[your_zID]/UNTRIMMED_FASTQC/*.html" .
+2) Using `scp` to move some infomation from scratch to your local computer.
+  
+   $ scp [your_zID]@dice02:"/share/ScratchGeneral/[your_ID]/rnaseq_tutorial/UNTRIMMED_FASTQC/*.html" .
     
     
  Understanding the Phred Quality Score
@@ -483,11 +481,11 @@ To unzip the files
     
 Let’s see what files are present within one of these output directories.
 
-    $ ls -F SRR2584863_FASTQC/
+    $ ls -F SRR19154402_fastqc/
    
 Use `less` to preview the `summary.txt` file for this sample.
 
-    $ cat SRR2584863_FASTQC/summary.txt
+    $ cat SRR19154402_fastqc/summary.txt
     
 The summary file gives us a list of tests that FastQC ran, and tells us whether this sample passed, failed, or is borderline (`WARN`). Remember, to quit from `less` you must type `q`.
 
