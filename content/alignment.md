@@ -165,7 +165,7 @@ First, we must download the reference files from (https://asia.ensembl.org/info/
 1. We will need the FASTA file of the cDNA sequence
 (https://ftp.ensembl.org/pub/release-109/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh38.cdna.all.fa.gz)
 
-      $ wget https://ftp.ensembl.org/pub/release-109/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh38.cdna.all.fa.gz
+       $ wget https://ftp.ensembl.org/pub/release-109/fasta/homo_sapiens/cdna/Homo_sapiens.GRCh38.cdna.all.fa.gz
       
  OR, if the expected download time is ages please copy from the communal folder.
  
