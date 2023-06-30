@@ -6,14 +6,14 @@ title: 5) Using DESeq2 for Differential Expression Analysis
 > --------
 > **Questions**
 > 
-> *   What are the top DETs in our experiment? 
+> *   What are the top DEGs in our experiment? 
 >     
 > 
 > **Objectives**
 > 
-> *   Use DESeq2 to output top differentially expressed transcripts  
+> *   Use DESeq2 to output top differentially expressed genes  
 >  
-> *   Understand the best diagrams to show differentially expressed transcripts
+> *   Understand the best diagrams to show differentially expressed genes
 > 
 
 ---------------------------------------
