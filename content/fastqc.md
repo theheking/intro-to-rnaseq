@@ -483,6 +483,9 @@ To unzip the files
 
     $ unzip *.zip
 
+Will throw an error. Why?
+
+
     $ for filename in *.zip
     > do
     > unzip $filename
