@@ -217,8 +217,8 @@ The other acronyms of database found on the x-axis of the manhatten plot are dif
 - MIRNA is miRTarBase
 - WP is Wikipathways
 - CORUM- comprehensive of mammalian protein complexes. Usually, the terms that are enriched are self-explanatory, e.g. CORUM:7586 FOXO1-ESR1 complex. This would represent an enrichment of genes that code for proteins within this complex. 
-- HP stands for Human Phenotype Ontology which is a database of disease related phenotypic abnormalities. So for each disease e.g. Marfan Syndrome you would have different annotations including HP:0001519 for disproportionate tall stature ect.
-- 
+- HP stands for Human Phenotype Ontology which is a database of disease-related phenotypic abnormalities. So for each disease e.g. Marfan Syndrome you would have different annotations including HP:0001519 for disproportionate tall stature ect.
+  
 ____
 This has been adapted from [Training-modules](https://github.com/hbctraining/Training-modules) 
 
