@@ -252,6 +252,9 @@ Like when you performed trimming, you will need to first request enough computat
 
 If you have single-end reads. 
 
+    $ ALIGNMENT="/share/ScratchGeneral/helkin/rnaseq_tutorial/ALIGNMENT/"
+    $ mkdir ${ALIGNMENT}
+    $ cd ${ALIGNMENT}
     $ for infile in *.trimmed.fastq.gz
           do
           base=$(basename ${infile} trimmed.fastq.gz)
@@ -260,7 +263,6 @@ If you have single-end reads.
            --single\
            --threads=8\
            --index=[insert_location_your transcriptome]\
-           --bootstrap-samples=25\
            --fragment-length=200\
            --sd=20\
            --output-dir=${outdir}\
@@ -272,6 +274,9 @@ If you have single-end reads.
 
 If you have paired-end reads. **Hint: check the string provided as the second part of the basename command matches the prefix of your infile**
 
+     $ ALIGNMENT="/share/ScratchGeneral/helkin/rnaseq_tutorial/ALIGNMENT/"
+     $ mkdir ${ALIGNMENT}
+     $ cd ${ALIGNMENT}
      $ for infile in *_1.trimmed.fastq.gz
           do
           base=$(basename ${infile} _1.trimmed.fastq.gz)
@@ -280,7 +285,6 @@ If you have paired-end reads. **Hint: check the string provided as the second pa
           kallisto quant \
            --threads=8 \
            --index=/srv/scratch/z5342988/transcriptome_Homo_sapiens_GRCh38 \
-           --bootstrap-samples=25 \
            --output-dir=${outdir} \
            --gtf=[insert_location_your_transcriptome]/Homo_sapiens.GRCh38.109.gtf ${infiles}
 
