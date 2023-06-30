@@ -306,3 +306,4 @@ If you have paired-end reads. **Hint: check the string provided as the second pa
   Adapted from https://cyverse-leptin-rna-seq-lesson-dev.readthedocs-hosted.com
   and https://pachterlab.github.io/kallisto/manual
   
+![image](https://github.com/theheking/intro-to-rnaseq/assets/36276388/659b3797-f59c-43d1-bc07-9fce124ae0b3)
