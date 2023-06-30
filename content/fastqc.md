@@ -360,14 +360,14 @@ For each input FASTQ file, FastQC has created a `.zip` file and a
 
 We want to keep our data files and our results files separate, so we will move these output files into a new directory within our `results/` directory.
 
-    $ mkdir -p /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/FASTQC_UNTRIMMED_READS
-    $ mv *.zip /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/FASTQC_UNTRIMMED_READS/
-    $ mv *.html /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/FASTQC_UNTRIMMED_READS/
+    $ mkdir -p /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/UNTRIMMED_FASTQ
+    $ mv *.zip /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/UNTRIMMED_FASTQ/
+    $ mv *.html /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/UNTRIMMED_FASTQ/
     
 
 Now we can navigate into this results directory and do some closer inspection of our output files.
 
-    $ cd /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/FASTQC_UNTRIMMED_READS/
+    $ cd /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/UNTRIMMED_FASTQ/
     
 
 Viewing the FastQC results
