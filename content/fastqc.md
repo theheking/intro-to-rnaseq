@@ -63,12 +63,17 @@ To download the data, please:
 2) Use `mkdir` to create a folder for your project within your scratch `rnaseq_tutorial`.
 3) Then make a folder to place your input fasta file e.g. `UNTRIMMED_FASTA` You can use the `-p` option for `mkdir`. This option allows `mkdir` to create the new directory, even if one of the parent directories does not already exist. It also suppresses errors if the directory already exists, without overwriting that directory. `tree rnaseq_tutorial`
 
+
+
+
 >   rnaseq_tutorial/
 >    └── UNTRIMMED_FASTA
 >
 
- Important for your unique download 
- ===================================
+
+
+Important for your unique download 
+===================================
 
 Copy your dataset from the **/share/ClusterShare/biodata/contrib/helkin/rna_seq_course/** to your local scratch **/share/ScratchGeneral/helkin/rnaseq_tutorial/UNTRIMMED_FASTA/** 
 
