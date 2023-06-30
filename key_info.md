@@ -32,7 +32,7 @@ All the courses will assume prior knowledge from [Intro to R](https://theheking.
 
  
 ## At the end of the workshop you will be able to:
-- Be able to process data from FASTQ to BAM using the HPC
+- Be able to process data from FASTQ to count matrix using the HPC
 - Transfer results from the HPC to your local laptop
 - Using DESeq for differential expression for a basic experiment
 
