@@ -72,15 +72,21 @@ This file contains the counts of one sample. For input into DESeq, you have to u
 Logout off the cluster and stay on your laptop. 
 You will now be transferring recursively downloading your files to your local computer. First move into a directory that you can access. 
 
+        $  cd ~/Desktop/intro-to-rna-seq
+        $  mkdir kallisto_output
+        $  cd kallisto_output
+        $  scp [yourID]@dice02.garvan.unsw.edu.au:"/share/ScratchGeneral/[yourID]/rnaseq_tutorial/kallisto_human_ref/Homo_sapiens.GRCh38.109.gtf" .
         $  rsync -r [yourID]@dice02.garvan.unsw.edu.au:"/share/ScratchGeneral/[yourID]/rnaseq_tutorial/ALIGNMENT/*chr1_chr3/" .
-        
- This should download a directory per sample containing the file called `transcript_counts.csv`. 
 
+Please go to Sample Datasets and download the respective links for SraRunTable and SRR Acc List 
+
+        $   wget https://raw.githubusercontent.com/theheking/babs-rna-seq/gh-pages/metadatafiles/SraRunTable_GSE30352.txt
+        $   wget https://raw.githubusercontent.com/theheking/babs-rna-seq/gh-pages/metadatafiles/SRR_Acc_List_GSE30352.txt
 
 Install and load packages
---------------------------------
-
+--------------------------
 Back to your RStudio...
+
 First, we'll need to install some add-on packages. Most generic R packages are hosted on the Comprehensive R Archive Network (CRAN, <http://cran.us.r-project.org/>). 
 
 To install one of these packages, you would use `install.packages("packagename")`. You only need to install a package once, then load it each time using `library(packagename)`. 
@@ -98,107 +104,76 @@ Bioconductor packages work a bit differently, and are not hosted on CRAN. Go to 
         
         BiocManager::install("tximport")
         BiocManager::install("DESeq2")
+        BiocManager::install("GenomicFeatures")
+        BiocManager::install("rhdf5")
 
 ```
 
 To install specific packages, first download the installer script if you haven't done so, and use `biocLite("packagename")`. This only needs to be done once then you can load the package like any other package. Let's download the [DESeq2 package](http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html):
 
-
 Now let's load the packages we'll use:
 
 ```{r load_pkgs, eval=TRUE}
+  
         library(DESeq2)
         library(gplots)
         library(calibrate)
         library(tximport)
+        library(GenomicFeatures)
+        library(rhdf5)
+
 ```
 
 
 Uploading metadata and counts table to DESeq 
 -----------------------------------------------
 
-kallisto abundance.tsv files can be imported as well, but this is typically slower than the approach above. Note that we add an additional argument in this code chunk, ignoreAfterBar=TRUE. This is because the Gencode transcripts have names like “ENST00000456328.2|ENSG00000223972.5|…”, though our tx2gene table only includes the first “ENST” identifier. We therefore want to split the incoming quantification matrix rownames at the first bar “|”, and only use this as an identifier. We didn’t use this option earlier with Salmon, because we used the argument --gencode when running Salmon, which itself does the splitting upstream of tximport. Note that ignoreTxVersion and ignoreAfterBar are only to facilitating the summarization to gene level.
+Let's import the metadata for the file. 
 
 ```
-        files <- file.path(dir, "kallisto", samples$run, "abundance.tsv.gz")
-        names(files) <- paste0("sample", 1:6)
-        txi.kallisto.tsv <- tximport(files, type = "kallisto", tx2gene = tx2gene, ignoreAfterBar = TRUE)
-        head(txi.kallisto.tsv$counts)
+        
+        metadata <- read.csv("~/Desktop/intro-to-rna-seq/kallisto_output/SraRunTable_GSE30352.txt")
+
+```
+
+We need to first load up the gtf file into R so that we can convert all the transcript IDs to gene IDs. 
+
+```
+        txdb <- makeTxDbFromGFF("/Users/helenking/Desktop/intro-to-rna-seq/kallisto_output/Homo_sapiens.GRCh38.109.gtf")
+        k <- keys(txdb, keytype = "TXNAME")
+        tx2gene <- select(txdb, k, "GENEID", "TXNAME")
+
+```
+
+Now let's create a list of all the files to load in. We need to convert the transcript to gene. 
+```
+        loc="~/Desktop/intro-to-rna-seq/kallisto_output/"
+        files <- list.files(loc,pattern="abundance.h5",recursive=TRUE)
+        files <- paste0(loc,files)
+        check <- sapply(lapply(strsplit(files,"/"),tail,2),head,1)
+        names(files) <- check
+        txi.kallisto <- tximport(files, type = "kallisto",  tx2gene = tx2gene,ignoreTxVersion = TRUE)
 ```
 
 The data.frame contains information about transcripts (one transcript per row) with the gene positions in the first five columns and then information about the number of reads aligning to the gene in each experimental sample. There are three replicates for control (column names starting with "ctl") and three for samples treated with ultraviolet-B light (starting "uvb"). We don't need the information on gene position for this analysis, just the counts for each gene and sample, so we can remove it from the data frame.
 
-
-```{r remove_metadata_cols}
-        # Remove first five columns (chr, start, end, strand, length)
-        countdata <- countdata[ ,-(1:5)]
-        head(countdata)
-        colnames(countdata)
+```
+        rownames(metadata) <- colnames(txi.kallisto$counts)
+        dds <- DESeqDataSetFromTximport(countData=txi.kallisto, colData=metadata, design=~source_name)
 ```
 
-We can rename the columns to something shorter and a bit more readable.
-
-```{r bad_renaming, eval=FALSE}
-        # Manually
-        c("ctl1", "ctl2", "ctl3", "uvb1", "uvb2", "uvb3")
-```
-
-We can do it manually, but what if we have 600 samples instead of 6? This would become cumbersome. Also, it's always a bad idea to hard-code sample phenotype information at the top of the file like this. A better way to do this is to use the `gsub` command to strip out the extra information. This more robust to introduced errors, for example if the column order changes at some point in the future or you add additional replicates.
-
-```{r rename_cols}
-        # Using gsub -- robust. Get help with ?gsub
-        gsub(pattern="trimmed_|.fastq_tophat.accepted_hits.bam", replacement="", x=colnames(countdata))
-        colnames(countdata) <- gsub(pattern="trimmed_|.fastq_tophat.accepted_hits.bam", replacement="", x=colnames(countdata))
-        head(countdata)
-```
-
----
-
-**EXERCISE**
-
-There's an R function called `rowSums()` that calculates the sum of each row in a numeric matrix, like the count matrix we have here, and it returns a vector. There's also a function called `which.max()` that determines the index of the maximum value in a vector.
-
-0. Find the gene with the highest expression across all samples -- remember, each row is a gene.
-0. Extract the expression data for this gene for all samples.
-0. In which sample does it have the highest expression?
-0. What is the function of the gene? Can you suggest why this is the top expressed gene?
+> Exercise 
+> There's an R function called `rowSums()` that calculates the sum of each row in a numeric matrix, like the count matrix we have here, and it returns a vector. There's also a function called `which.max()` that determines the index of the maximum value in a vector.
+> 1. Find the gene with the highest expression across all samples -- remember, each row is a gene.
+> 2. Extract the expression data for this gene for all samples.
+> 3. In which sample does it have the highest expression?
+> 4. What is the function of the gene? Can you suggest why this is the top expressed gene?
 
 ```{r, echo=FALSE, include=FALSE}
         topGene <- which.max(rowSums(countdata))
         topGene
         countdata[topGene, ]
         # this is a pseudogene - maybe an artefact of only aligning reads to a single chromosome?
-```
-
-
-## DESeq2 analysis
-
-DESeq2 is an R package for analyzing count-based NGS data like RNA-seq. It is available from [Bioconductor](http://www.bioconductor.org/). Bioconductor is a project to provide tools for analysing high-throughput genomic data including RNA-seq, ChIP-seq and arrays. You can explore Bioconductor packages [here](http://www.bioconductor.org/packages/release/BiocViews.html#___Software).
-
-Just like R packages from CRAN, you only need to install Bioconductor packages once, then load them every time you start a new R session.
-
-```{r install_deseq2, eval=FALSE}
-        source("http://bioconductor.org/biocLite.R")
-        biocLite("DESeq2")
-```
-
-```{r load_deseq22}
-        library("DESeq2")
-        citation("DESeq2")
-```
-
-It requires the count data to be in matrix form, and an additional dataframe describing sample metadata. Notice that the **colnames of the countdata** match the **rownames of the metadata*.
-
-```{r read_coldata}
-        mycoldata <- read.csv("data/coldata.csv", row.names=1)
-        mycoldata
-```
-
-DESeq works on a particular type of object called a DESeqDataSet. The DESeqDataSet is a single object that contains input values, intermediate calculations like how things are normalized, and all results of a differential expression analysis. You can construct a DESeqDataSet from a count matrix, a metadata file, and a formula indicating the design of the experiment.
-
-```{r make_deseqdataset}
-        dds <- DESeqDataSetFromMatrix(countData=countdata, colData=mycoldata, design=~condition)
-        dds
 ```
 
 Next, let's run the DESeq pipeline on the dataset, and reassign the resulting object back to the same variable. Before we start, `dds` is a bare-bones DESeqDataSet. The `DESeq()` function takes a DESeqDataSet and returns a DESeqDataSet, but with lots of other information filled in (normalization, results, etc). Here, we're running the DESeq pipeline on the `dds` object, and reassigning the whole thing back to `dds`, which will now be a DESeqDataSet populated with results.
@@ -239,8 +214,11 @@ The differential expression analysis above operates on the raw (normalized) coun
         rld <- rlogTransformation(dds)
         
         # Principal components analysis
-        plotPCA(rld, intgroup="condition")
-        
+        plotPCA(rld, intgroup="source_name")
+```
+
+
+```
         # Hierarchical clustering analysis
         ## let's get the actual values for the first few genes
         head(assay(rld))
@@ -266,7 +244,6 @@ That's a horribly ugly default. You can change the built-in heatmap function, bu
 
 ```{r gplots_heatmap}
         # better heatmap with gplots
-        library("gplots")
         heatmap.2(sampledistmat)
         heatmap.2(sampledistmat, key=FALSE, trace="none")
         colorpanel(10, "black", "white")
@@ -288,8 +265,7 @@ Let's plot an MA-plot. This shows the fold change versus the overall expression 
         with(res, plot(baseMean, log2FoldChange, pch=16, cex=.5, log="x"))
         with(subset(res, padj<.05), points(baseMean, log2FoldChange, col="red", pch=16))
         
-        # optional: label the points with the calibrate package. see ?textxy for help
-        library("calibrate")
+
         res$Gene <- rownames(res)
         head(res)
         with(subset(res, padj<.05), textxy(baseMean, log2FoldChange, labs=Gene, cex=1, col="red"))
