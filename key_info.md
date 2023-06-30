@@ -42,6 +42,11 @@ All the courses will assume prior knowledge from [Intro to R](https://theheking.
 
 
 
+DSP Helpdesk
+==============
+To ask help from Derrick and select the [portal](https://jira.gimr.garvan.org.au/servicedesk/customer/portal/20) or email dsphelp@garvan.org.au 
+
+
 Accessing the Wolfpack, Garvan's HPC
 =====================================
 
