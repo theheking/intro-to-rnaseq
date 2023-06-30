@@ -470,6 +470,10 @@ It is hard to read through all html files at once. A great tool to make a summar
 > Does any samples fail at least one of FastQC’s quality tests? What test(s) did those samples fail?
 
 ***Extra Work***
+
+
+
+
 Working with the FastQC text output
 -----------------------------------
 
