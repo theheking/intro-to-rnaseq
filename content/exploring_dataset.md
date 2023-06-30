@@ -74,7 +74,7 @@ My paper link is: https://www.nature.com/articles/nature10532#accession-codes
 
 > **Author Information** All sequencing data sets are available under GSE30352. (https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE30352)
 
-**For this tutorial, I have provided you all with show you how to access data and metadata. However, for this course, we have already prepared the FASTQ files to make them smaller and less computationally demanding. ***
+*** For this tutorial, I have provided you all with show you how to access data and metadata. However, for this course, we have already prepared the FASTQ files to make them smaller and less computationally demanding. ***
 
 
 **You will be given a paper per table**
