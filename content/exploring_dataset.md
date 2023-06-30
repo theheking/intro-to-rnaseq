@@ -59,6 +59,7 @@ Overview of the experimental steps in a RNA-seq protocol. The cDNA library is ge
 With paired-end sequencing, both ends of the fragment are sequenced. With single-end sequencing, only one end of a fragment is sequenced.
 
 
+
 Accessing the original archived data
 ------------------------------------
 The [sequencing dataset (from Brawand, _et al._ 2011) adapted for this lesson] was obtained from the [NCBI Sequence Read Archive](https://www.ncbi.nlm.nih.gov/sra), which is a large (~27 petabasepairs/2.7 x 10^16 basepairs as of April 2019) repository for next-generation sequence data. 
@@ -98,7 +99,6 @@ The paper for your given table can be found on the **Sample Datasets*** tab.
 2.  Notice on this page there are three sections. “Common Fields” “Select”, and “Found 149 Items”. Within “Found 149 Items”, click on the first Run Number (Column “Run” Row “1”). 
 
 ![ncbi-new-tables2.png](../assets/img/pic3.png)
-
 
 3.  This will take you to a page that is a run browser. Take a few minutes to examine some of the descriptions on the page. 
    
