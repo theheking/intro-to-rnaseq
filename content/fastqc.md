@@ -405,7 +405,7 @@ Now we can transfer our HTML files to our local computer.
   
 2) Using `scp` to move some infomation from scratch to your local computer.
   
-   $ scp [your_zID]@dice02:"/share/ScratchGeneral/[your_ID]/rnaseq_tutorial/UNTRIMMED_FASTQC/*.html" .
+       $ scp [your_zID]@dice02:"/share/ScratchGeneral/[your_ID]/rnaseq_tutorial/UNTRIMMED_FASTQC/*.html" .
     
     
  Understanding the Phred Quality Score
