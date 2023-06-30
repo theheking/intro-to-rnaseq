@@ -253,8 +253,8 @@ If you have a paired end sequence the for loop with be different...
 We have now completed the trimming and filtering steps of our quality control process! Before we move on, let’s move our trimmed FASTQ files to a new subdirectory within our `data` directory.
 
     $ cd /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/
-    $ mkdir TRIMMED_FASTQ
-    $ mv ./UNTRIMMED_FASTQ/*.trim* TRIMMED_FASTQ
+    $ mkdir TRIMMED_FASTA
+    $ mv ./UNTRIMMED_FASTA/*.trim* TRIMMED_FASTA
     $ ls
     
 
