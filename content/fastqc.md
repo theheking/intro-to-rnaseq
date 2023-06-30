@@ -493,11 +493,11 @@ Will throw an error. Why?
     
 Let’s see what files are present within one of these output directories.
 
-    $ ls -F SRR19154402_fastqc/
+    $ ls -F SRR306844chr1_chr3_fastqc/
    
 Use `less` to preview the `summary.txt` file for this sample.
 
-    $ cat SRR19154402_fastqc/summary.txt
+    $ cat SRR306844chr1_chr3_fastqc/summary.txt
     
 The summary file gives us a list of tests that FastQC ran, and tells us whether this sample passed, failed, or is borderline (`WARN`). Remember, to quit from `less` you must type `q`.
 
