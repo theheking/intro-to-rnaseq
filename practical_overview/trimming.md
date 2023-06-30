@@ -78,9 +78,9 @@ We will use only a few of these options and trimming steps in our analysis. It i
 
 However, a complete command for Trimmomatic will look something like the command below. This command is an example and will not work, as we do not have the files it refers to:
 
-    $ trimmomatic PE -threads 4 SRR_1056_1.fastq SRR_1056_2.fastq  \
-                  SRR_1056_1.trimmed.fastq SRR_1056_1un.trimmed.fastq \
-                  SRR_1056_2.trimmed.fastq SRR_1056_2un.trimmed.fastq \
+    $ trimmomatic PE -threads 4 example_1.fastq example_2.fastq  \
+                  example_1.trimmed.fastq example_1.untrimmed.fastq \
+                  example_2.trimmed.fastq example_2.untrimmed.fastq \
                   ILLUMINACLIP:TruSeq3-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36     
                   
                   
@@ -93,12 +93,12 @@ In this example, we have told Trimmomatic:
 | ------------------------------ | --------------------------------------------------------------------------------------------------------- |
 | `PE`                           | that it will be taking a paired end file as input                                                         |
 | `-threads 4`                   | to use four computing threads to run (this will speed up our run)                                         |
-| `SRR_1056_1.fastq`             | the first input file name                                                                                 |
-| `SRR_1056_2.fastq`             | the second input file name                                                                                |
-| `SRR_1056_1.trimmed.fastq`     | the output file for surviving pairs from the `_1` file                                                    |
-| `SRR_1056_1un.trimmed.fastq`   | the output file for orphaned reads from the `_1` file                                                     |
-| `SRR_1056_2.trimmed.fastq`     | the output file for surviving pairs from the `_2` file                                                    |
-| `SRR_1056_2un.trimmed.fastq`   | the output file for orphaned reads from the `_2` file                                                     |
+| `example_1.fastq`             | the first input file name                                                                                 |
+| `example_2.fastq`             | the second input file name                                                                                |
+| `example_1.trimmed.fastq`     | the output file for surviving pairs from the `_1` file                                                    |
+| `example_1.untrimmed.fastq`   | the output file for orphaned reads from the `_1` file                                                     |
+| `example_2.trimmed.fastq`     | the output file for surviving pairs from the `_2` file                                                    |
+| `example_2.untrimmed.fastq`   | the output file for orphaned reads from the `_2` file                                                     |
 | `ILLUMINACLIP:SRR_adapters.fa` | to clip the Illumina adapters from the input file using the adapter sequences listed in `SRR_adapters.fa` |
 | `SLIDINGWINDOW:4:20`           | to use a sliding window of size 4 that will remove bases if their phred score is below 20                 |
     
@@ -114,13 +114,13 @@ Running Trimmomatic
 
 Now we will run Trimmomatic on our data. To begin, navigate to the data directory that contains your untrimmed fastq files:
 
-    $ cd /[yourscratch]/data/
+    $ cd /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/UNTRIMMED_FASTA/
 
 We are going to run Trimmomatic on one of my single-end samples. While using FastQC we saw that TruSeq adapters were present in our samples. The adapter sequences came with the installation of trimmomatic, so we will first copy these sequences into our current directory.
 
-    $ scp -r /srv/scratch/babs3291/adapters/ [yourscratch]
-    
 
+    $ scp -r /share/ClusterShare/biodata/contrib/helkin/rna_seq_course/adapters/ /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/
+    
 
 The adapter sequence you should specify with be dependent on:
 1. the platform your samples are run on (check out the GEO website that is relevant to your samples)
@@ -129,13 +129,13 @@ The adapter sequence you should specify with be dependent on:
 
 Please look at the possible adapters that can be used for the adapter sequences 
 
-    $ ls /[yourscratch]/adapters
+    $ ls /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/adapters
     
     $ NexteraPE-PE.fa  TruSeq2-PE.fa  TruSeq2-SE.fa  TruSeq3-PE.fa  TruSeq3-PE-2.fa  TruSeq3-SE.fa
 
 If you look at the content inside one of these fasta files. You will realise it is filled with short sequences of oligonucleotides.
 
-    $ head /[yourscratch]/adapters/NexteraPE-PE.fa
+    $ head /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/adapters/NexteraPE-PE.fa
     
     $ >PrefixNX/1
     $ AGATGTGTATAAGAGACAG
@@ -152,7 +152,7 @@ We will also use a sliding window of size 4 that will remove bases if their phre
 
 This command will take a few minutes to run.
 
-    $ ADAPTERSEQ="[yourscratch]/adapters/TruSeq2-SE.fa"
+    $ ADAPTERSEQ="/share/ScratchGeneral/[your_ID]/rnaseq_tutorial/adapters/TruSeq2-SE.fa"
     $ trimmomatic SE -phred33 SRR306844chr1_chr3.fastq.gz \
                     SRR306844chr1_chr3.trim.fastq.gz \
                     ILLUMINACLIP:${ADAPTERSEQ}:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36 
@@ -174,8 +174,8 @@ This command will take a few minutes to run.
  If you have paired end sequences you should run the command from before. 
  
      $ trimmomatic PE -threads 4 SRR_1056_1.fastq.gz SRR_1056_2.fastq.gz  \
-                  SRR_1056_1.trimmed.fastq.gz SRR_1056_1un.trimmed.fastq.gz \
-                  SRR_1056_2.trimmed.fastq.gz SRR_1056_2un.trimmed.fastq.gz \
+                  SRR_1056_1.trimmed.fastq.gz SRR_1056_1.untrimmed.fastq.gz \
+                  SRR_1056_2.trimmed.fastq.gz SRR_1056_2.untrimmed.fastq.gz \
                   ILLUMINACLIP:TruSeq3-PE.fa:2:30:10 LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:36     
                   
     
@@ -187,7 +187,7 @@ This command will take a few minutes to run.
 > 
 > 1) What percent of reads did you discard from your sample? 
 > 2) What percent of reads did we keep both pairs?
-> 3) What biological samples are more likely to have a higher percentage trimming? 
+> 3) What biological samples are more likely to have a higher percentage of trimming? 
 
     
     
@@ -252,7 +252,7 @@ If you have a paired end sequence the for loop with be different...
 
 We have now completed the trimming and filtering steps of our quality control process! Before we move on, let’s move our trimmed FASTQ files to a new subdirectory within our `data` directory.
 
-    $ cd /srv/scratch/z5342988/data/
+    $ cd /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/
     $ mkdir TRIMMED_FASTQ
     $ mv ./UNTRIMMED_FASTQ/*.trim* TRIMMED_FASTQ
     $ ls
