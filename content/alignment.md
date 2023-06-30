@@ -150,15 +150,15 @@ Step 1 Genome indexing for Kallisto
 ===================================
 There are a few files we need to perform the first step of Kallisto
 
-- Reference transcriptome: A file of all the known trasncripts of the human genome
+- Reference transcriptome: A file of all the known transcripts of the human genome
 - Reference annotations: A file with information on the location and structure of the genes in the human genome and a file with chromosome details.
   
   
   
 
-We will now use Kallisto's indexing function to prepare the transcriptome for analysis. The "Index" is a lookup table for the transcriptome that allows it to be more easily searched by Kallisto. First let's organize our files by creating a new directory to hold our kallisto work.
+We will now use Kallisto's indexing function to prepare the transcriptome for analysis. The "Index" is a lookup table for the transcriptome that allows it to be more easily searched by Kallisto. First, let's organize our files by creating a new directory to hold our kallisto work.
 
-    $ mkdir -p /srv/scratch/[your_zID]/kallisto_human_ref/
+    $ mkdir -p /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/kallisto_human_ref/
  
 First, we must download the reference files from (https://asia.ensembl.org/info/data/ftp/index.html) using `wget`
 
@@ -169,7 +169,7 @@ First, we must download the reference files from (https://asia.ensembl.org/info/
       
  OR, if the expected download time is ages please copy from the communal folder.
  
-      $ scp /srv/scratch/babs3291/references/Homo_sapiens.GRCh38.cdna.all.fa.gz /srv/scratch/[your_zID]/kallisto_human_ref/
+      $ scp /srv/scratch/babs3291/references/Homo_sapiens.GRCh38.cdna.all.fa.gz /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/kallisto_human_ref/
       
 2. We also will need the human GTF file, a file containing coordinates and descriptions for all gene names and locations - we will also download this from Ensembl. (https://ftp.ensembl.org/pub/release-109/gtf/homo_sapiens/Homo_sapiens.GRCh38.109.gtf.gz)  **not needed for index command**
   
@@ -177,18 +177,19 @@ First, we must download the reference files from (https://asia.ensembl.org/info/
         
  OR, if the expected download time is large, please copy from the communal folder.
  
-        $ scp  /srv/scratch/babs3291/references/Homo_sapiens.GRCh38.109.gtf.gz /srv/scratch/[your_zID]/kallisto_human_ref/
+        $ scp  /srv/scratch/babs3291/references/Homo_sapiens.GRCh38.109.gtf.gz /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/kallisto_human_ref/
         
 Also, must unzip the gtf above. This will take the gtf from being compressed to human readable.
         
         $ gunzip Homo_sapiens.GRCh38.109.gtf.gz 
       
-First we must load kallisto to our session using `module load` as this is not installed.
+First, we must load kallisto to our session using `module load` as this is not installed.
 
         $ module load centos6.10/pethum/kallisto/prebuilt/0.43.0
 
-Next run the indexing command. This prepares the transcriptome so that we can pseudoalign reads to it.
-  
+Next, run the indexing command. This prepares the transcriptome so that we can pseudoalign reads to it.
+
+    $ cd /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/
     $ kallisto index --index=transcriptome_Homo_sapiens_GRCh38 kallisto_human_ref/Homo_sapiens.GRCh38.cdna.all.fa.gz
 
 
@@ -198,7 +199,7 @@ In this final step, we will run Kallisto on all of our files to quantify the rea
 
 Using your trimmed reads
 
-    $ cd /srv/scratch/[your_zID]/trimmed_fastq/
+    $ cd /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/TRIMMED_FASTQ/
   
 All instructions for the commands we are using are in the Kallisto manual: https://pachterlab.github.io/kallisto/manual. Since we are using single-read data, we need to provide information on the fragment length used for the library (200) and an estimate of the standard deviation for this value - here we will have to guess (20). 
 
@@ -207,7 +208,7 @@ We need to run Kallisto on all of your files. Run the command below on one of yo
 Single-end:
 
 
-    $ INPUT_FASTA="[yourscratch]/data/SRR306844chr1_chr3.trimmed.fastq.gz"
+    $ INPUT_FASTA="/share/ScratchGeneral/[your_ID]/rnaseq_tutorial/TRIMMED_FASTQ/SRR306844chr1_chr3.trimmed.fastq.gz"
  
     $ kallisto quant \
      --single\
@@ -222,14 +223,14 @@ Single-end:
  
 For paired-end reads, you need two files as input.
 
-    $ INPUT_FASTA="[yourscratch]/data/SRR306844*.trimmed.fastq.gz"
+    $ INPUT_FASTA="/share/ScratchGeneral/[your_ID]/rnaseq_tutorial/TRIMMED_FASTQ/SRR306844*.trimmed.fastq.gz"
  
     $ kallisto quant \
      --threads=8\
      --index=[insert_location_your_transcriptome] \
      --output-dir=output\
      --genomebam\
-     --gtf=Homo_sapiens.GRCh38.109.gtf ${INPUT_FASTA}
+     --gtf=[insert_location_your_transcriptome]/Homo_sapiens.GRCh38.109.gtf ${INPUT_FASTA}
      
      
      
@@ -247,7 +248,7 @@ Next you will have to calculate an abundance.tsv file for every sample.
 
 Step 3 For Loop to perform pseudoalignment of reads for every sample
 ========================================================================
-Like when you performed trimming, you will need to first request enough computational resources through `qsub -I`. Then you will have to run a for loop to loop through every sample fastq file. The loop you use is dependent on whether you are single end or paired end. 
+Like when you performed trimming, you will need to first request enough computational resources through `qrsh`. Then you will have to run a for loop to loop through every sample fastq file. The loop you use is dependent on whether you are single end or paired end. 
 
 If you have single-end reads. 
 
@@ -263,7 +264,7 @@ If you have single-end reads.
            --fragment-length=200\
            --sd=20\
            --output-dir=${outdir}\
-           --gtf=Homo_sapiens.GRCh38.109.gtf ${infile}
+           --gtf=[insert_location_your_transcriptome]/Homo_sapiens.GRCh38.109.gtf ${infile}
 
       done
 
@@ -281,7 +282,7 @@ If you have paired-end reads. **Hint: check the string provided as the second pa
            --index=/srv/scratch/z5342988/transcriptome_Homo_sapiens_GRCh38 \
            --bootstrap-samples=25 \
            --output-dir=${outdir} \
-           --gtf=Homo_sapiens.GRCh38.109.gtf ${infiles}
+           --gtf=[insert_location_your_transcriptome]/Homo_sapiens.GRCh38.109.gtf ${infiles}
 
       done
 
