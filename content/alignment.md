@@ -223,7 +223,7 @@ Single-end:
  
 For paired-end reads, you need two files as input.
 
-    $ INPUT_FASTA="/share/ScratchGeneral/[your_ID]/rnaseq_tutorial/TRIMMED_FASTQ/SRR306844*.trimmed.fastq.gz"
+    $ INPUT_FASTA="/share/ScratchGeneral/[your_ID]/rnaseq_tutorial/TRIMMED_FASTA/SRR306844*.trimmed.fastq.gz"
  
     $ kallisto quant \
      --threads=8\
@@ -255,7 +255,7 @@ If you have single-end reads.
     $ ALIGNMENT="/share/ScratchGeneral/helkin/rnaseq_tutorial/ALIGNMENT/"
     $ mkdir ${ALIGNMENT}
     $ cd ${ALIGNMENT}
-    $ for infile in *.trimmed.fastq.gz
+    $ for infile in /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/TRIMMED_FASTA/*.trimmed.fastq.gz
           do
           base=$(basename ${infile} trimmed.fastq.gz)
           outdir="${base}"
@@ -266,11 +266,10 @@ If you have single-end reads.
            --fragment-length=200\
            --sd=20\
            --output-dir=${outdir}\
-           --gtf=[insert_location_your_transcriptome]/Homo_sapiens.GRCh38.109.gtf ${infile}
+           --gtf=[insert_location_your_reference_files]/Homo_sapiens.GRCh38.109.gtf ${infile}
 
       done
-
-
+      
 
 If you have paired-end reads. **Hint: check the string provided as the second part of the basename command matches the prefix of your infile**
 
