@@ -58,13 +58,13 @@ Opening up a project
 **Please be thoughtful about where you are saving your directory e.g. Desktop**
 
 
-Transferring to local computer
+Transferring to a local computer
 --------------------------------
 
 Log onto the Wolfpack. Change the directory into the location that contains your aligned kallisto output `abundance.tsv`.
 
-        $ ssh [userid]@dice02.garvan.unsw.edu.au
-        $ cd /srv/scratch/zID/data/SRR306844chr1_chr3/
+        $ ssh [yourID]@dice02.garvan.unsw.edu.au
+        $ cd /share/ScratchGeneral/[yourID]/rnaseq_tutorial/ALIGNMENT/SRR306844chr1_chr3/
         $ ls abundance.tsv
       
 This file contains the counts of one sample. For input into DESeq, you have to upload all the abundance.tsv files for every sample found in their respective folder.  
@@ -72,61 +72,50 @@ This file contains the counts of one sample. For input into DESeq, you have to u
 Logout off the cluster and stay on your laptop. 
 You will now be transferring recursively downloading your files to your local computer. First move into a directory that you can access. 
 
-        $  rsync -r [userid]@dice02.garvan.unsw.edu.au:"[your_scratch]/FASTQ_TRIMMED/*chr1_chr3/" .
+        $  rsync -r [yourID]@dice02.garvan.unsw.edu.au:"/share/ScratchGeneral/[yourID]/rnaseq_tutorial/ALIGNMENT/*chr1_chr3/" .
         
  This should download a directory per sample containing the file called `transcript_counts.csv`. 
 
 
-## Install and load packages
+Install and load packages
+--------------------------------
 
-First, we'll need to install some add-on packages. Most generic R packages are hosted on the Comprehensive R Archive Network (CRAN, <http://cran.us.r-project.org/>). To install one of these packages, you would use `install.packages("packagename")`. You only need to install a package once, then load it each time using `library(packagename)`. Let's install the **gplots** and **calibrate** packages.
+Back to your RStudio...
+First, we'll need to install some add-on packages. Most generic R packages are hosted on the Comprehensive R Archive Network (CRAN, <http://cran.us.r-project.org/>). 
+
+To install one of these packages, you would use `install.packages("packagename")`. You only need to install a package once, then load it each time using `library(packagename)`. 
 
 ```{r install_packages, eval=FALSE}
-install.packages("gplots")
-install.packages("calibrate")
-if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-
-BiocManager::install("tximport")
+        install.packages("gplots")
+        install.packages("calibrate")
 ```
 
 Bioconductor packages work a bit differently, and are not hosted on CRAN. Go to <http://bioconductor.org/> to learn more about the Bioconductor project. To use any Bioconductor package, you'll need a few "core" Bioconductor packages. Run the following commands to (1) download the installer script, and (2) install some core Bioconductor packages. You'll need internet connectivity to do this, and it'll take a few minutes, but it only needs to be done once.
 
 ```{r bioclite, eval=FALSE}
-# Download the installer script
-source("http://bioconductor.org/biocLite.R")
+        if (!require("BiocManager", quietly = TRUE))
+            install.packages("BiocManager")
+        
+        BiocManager::install("tximport")
+        BiocManager::install("DESeq2")
 
-# biocLite() is the bioconductor installer function. Run it without any
-# arguments to install the core packages or update any installed packages. This
-# requires internet connectivity and will take some time!
-biocLite()
 ```
 
 To install specific packages, first download the installer script if you haven't done so, and use `biocLite("packagename")`. This only needs to be done once then you can load the package like any other package. Let's download the [DESeq2 package](http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html):
 
-```{r load_deseq2, eval=FALSE}
-# Do only once
-source("http://bioconductor.org/biocLite.R")
-biocLite("DESeq2")
-```
 
 Now let's load the packages we'll use:
 
 ```{r load_pkgs, eval=TRUE}
-library(DESeq2)
-library(gplots)
-library(calibrate)
+        library(DESeq2)
+        library(gplots)
+        library(calibrate)
+        library(tximport)
 ```
 
 
 Uploading metadata and counts table to DESeq 
 -----------------------------------------------
-Back to your RStudio...
-
-Load the txImportData library to DESeq
-```
-        library(tximport)
-```
 
 kallisto abundance.tsv files can be imported as well, but this is typically slower than the approach above. Note that we add an additional argument in this code chunk, ignoreAfterBar=TRUE. This is because the Gencode transcripts have names like “ENST00000456328.2|ENSG00000223972.5|…”, though our tx2gene table only includes the first “ENST” identifier. We therefore want to split the incoming quantification matrix rownames at the first bar “|”, and only use this as an identifier. We didn’t use this option earlier with Salmon, because we used the argument --gencode when running Salmon, which itself does the splitting upstream of tximport. Note that ignoreTxVersion and ignoreAfterBar are only to facilitating the summarization to gene level.
 
