@@ -298,7 +298,7 @@ Let's create a volcano plot.
         # Label points
         with(subset(res, padj<.05 & abs(log2FoldChange)>2), textxy(log2FoldChange, -log10(pvalue), labs=Gene, cex=1))
 ```
-![](../assets/img/volcanoplot.png)
+![](../assets/img/volcano.png)
 
 
 
