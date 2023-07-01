@@ -91,14 +91,14 @@ First, we'll need to install some add-on packages. Most generic R packages are h
 
 To install one of these packages, you would use `install.packages("packagename")`. You only need to install a package once, then load it each time using `library(packagename)`. 
 
-```{r install_packages, eval=FALSE}
+```
         install.packages("gplots")
         install.packages("calibrate")
 ```
 
 Bioconductor packages work a bit differently, and are not hosted on CRAN. Go to <http://bioconductor.org/> to learn more about the Bioconductor project. To use any Bioconductor package, you'll need a few "core" Bioconductor packages. Run the following commands to (1) download the installer script, and (2) install some core Bioconductor packages. You'll need internet connectivity to do this, and it'll take a few minutes, but it only needs to be done once.
 
-```{r bioclite, eval=FALSE}
+```
         if (!require("BiocManager", quietly = TRUE))
             install.packages("BiocManager")
         
@@ -113,7 +113,7 @@ To install specific packages, first download the installer script if you haven't
 
 Now let's load the packages we'll use:
 
-```{r load_pkgs, eval=TRUE}
+```
   
         library(DESeq2)
         library(gplots)
@@ -169,7 +169,7 @@ The data.frame contains information about transcripts (one transcript per row) w
 > 3. In which sample does it have the highest expression?
 > 4. What is the function of the gene? Can you suggest why this is the top expressed gene?
 
-```{r, echo=FALSE, include=FALSE}
+```
         topGene <- which.max(rowSums(countdata))
         topGene
         countdata[topGene, ]
@@ -177,13 +177,13 @@ The data.frame contains information about transcripts (one transcript per row) w
 
 Next, let's run the DESeq pipeline on the dataset, and reassign the resulting object back to the same variable. Before we start, `dds` is a bare-bones DESeqDataSet. The `DESeq()` function takes a DESeqDataSet and returns a DESeqDataSet, but with lots of other information filled in (normalization, results, etc). Here, we're running the DESeq pipeline on the `dds` object, and reassigning the whole thing back to `dds`, which will now be a DESeqDataSet populated with results.
 
-```{r run_deseq}
+```
         dds <- DESeq(dds)
 ```
 
 Now, let's use the `results()` function to pull out the results from the `dds` object. Let's re-order by the adjusted p-value.
 
-```{r}
+```
         # Get differential expression results
         res <- results(dds)
         head(res)
@@ -195,7 +195,7 @@ Now, let's use the `results()` function to pull out the results from the `dds` o
 
 Combine DEseq results with the original counts data. Write significant results to a file.
 
-```{r write_results}
+```
         sig <- subset(res, padj<0.05)
         dir.create("results")
         write.csv(sig, file="results/sig.csv") # tab delim data
@@ -210,7 +210,7 @@ The differential expression analysis above operates on the raw (normalized) coun
 
 Perform a principal components analysis and hierarchical clustering. PCA is a method to visualise the similarity or dissimilarity between each sample. We would expect the samples to cluster based on tissue. This is because we would expect the cerebellum samples to be more similar to each other than heart samples. In our MDS plot, we can see SRR306844chr1_chr3 clustering distinctly from all other samples. If not clustering well, it is an indicator of a contaminated sample or confounding factor not taken into account.
 
-```{r}
+```
         # Transform
         rld <- rlogTransformation(dds)
         
@@ -244,7 +244,7 @@ Perform a principal components analysis and hierarchical clustering. PCA is a me
 
 Let's plot a heatmap that also visualised the similarity/dissimilarity across samples.
 
-```{r plot_heatmaps}
+```
         # ?heatmap for help
         sampledist
         as.matrix(sampledist)
@@ -255,7 +255,7 @@ Let's plot a heatmap that also visualised the similarity/dissimilarity across sa
 
 That's a horribly ugly default. You can change the built-in heatmap function, but others are better. 
 
-```{r gplots_heatmap}
+```
         # better heatmap with gplots
         heatmap.2(sampledistmat)
         heatmap.2(sampledistmat, key=FALSE, trace="none")
@@ -275,7 +275,7 @@ That's a horribly ugly default. You can change the built-in heatmap function, bu
 
 Let's create a histogram of 
 
-```{r plot_pval_hist}
+```
         # Examine plot of p-values
         hist(res$pvalue, breaks=50, col="grey")
 ```
@@ -289,7 +289,7 @@ Let's create a histogram of
 Let's plot an MA  plot. This shows the fold change versus the overall expression values. A MA-plot which is a scatter plot of log2 fold changes (M, on the y-axis) versus the average expression signal (A, on the x-axis). M = log2(x/y) and A = (log2(x) + log2(y))/2 = log2(xy)*1/2, where x and y are respectively the means of the two groups being compared, cerebellum and heart.
 
 
-```{r MA_plot}
+```
         with(res, plot(baseMean, log2FoldChange, pch=16, cex=.5, log="x"))
         with(subset(res, padj<.05), points(baseMean, log2FoldChange, col="red", pch=16))
         
@@ -301,7 +301,7 @@ Let's plot an MA  plot. This shows the fold change versus the overall expression
 
 Let's create a volcano plot. The volcano plot shows on shows the -log10pvalue (adjuted) against the logFC. The higher the value of the -log10pval, the greater the confidence in the log FC is not random.
 
-```{r volcano_plot}
+```
         par(pch=16)
         with(res, plot(log2FoldChange, -log10(pvalue), main="Volcano plot"))
         with(subset(res, padj<.05 ), points(log2FoldChange, -log10(pvalue), col="red"))
