@@ -173,7 +173,6 @@ The data.frame contains information about transcripts (one transcript per row) w
         topGene <- which.max(rowSums(countdata))
         topGene
         countdata[topGene, ]
-        # this is a pseudogene - maybe an artefact of only aligning reads to a single chromosome?
 ```
 
 Next, let's run the DESeq pipeline on the dataset, and reassign the resulting object back to the same variable. Before we start, `dds` is a bare-bones DESeqDataSet. The `DESeq()` function takes a DESeqDataSet and returns a DESeqDataSet, but with lots of other information filled in (normalization, results, etc). Here, we're running the DESeq pipeline on the `dds` object, and reassigning the whole thing back to `dds`, which will now be a DESeqDataSet populated with results.
@@ -207,7 +206,9 @@ Combine DEseq results with the original counts data. Write significant results t
 
 We can also do some exploratory plotting of the data.
 
-The differential expression analysis above operates on the raw (normalized) count data. But for visualizing or clustering data as you would with a microarray experiment, you need to work with transformed versions of the data. First, use a *regularized log* transformation while re-estimating the dispersion ignoring any information you have about the samples (`blind=TRUE`). Perform a principal components analysis and hierarchical clustering.
+The differential expression analysis above operates on the raw (normalized) count data. But for visualizing or clustering data as you would with a microarray experiment, you need to work with transformed versions of the data. First, use a *regularized log* transformation while re-estimating the dispersion ignoring any information you have about the samples (`blind=TRUE`). 
+
+Perform a principal components analysis and hierarchical clustering. PCA is a method to visualise the similarity or dissimilarity between each sample. We would expect the samples to cluster based on tissue. This is because we would expect the cerebellum samples to be more similar to each other than heart samples. In our MDS plot, we can see SRR306844chr1_chr3 clustering distinctly from all other samples. If not clustering well, it is an indicator of a contaminated sample or confounding factor not taken into account.
 
 ```{r}
         # Transform
@@ -218,6 +219,14 @@ The differential expression analysis above operates on the raw (normalized) coun
 ```
 
 ![](../assets/img/PCA.png)
+
+
+> Exercise
+> ---------
+> Research how to do an elbow plot for the PCA plotted above.
+> 
+> Make all the plots more aesthetically pleasing.
+> 
 
 
 ```
@@ -231,8 +240,9 @@ The differential expression analysis above operates on the raw (normalized) coun
         sampledist <- dist(t(assay(rld)))
         plot(hclust(sampledist))
 ```
+![](../assets/img/dendrogram.png)
 
-Let's plot a heatmap.
+Let's plot a heatmap that also visualised the similarity/dissimilarity across samples.
 
 ```{r plot_heatmaps}
         # ?heatmap for help
@@ -243,8 +253,7 @@ Let's plot a heatmap.
 ```
 ![](../assets/img/heatmap.png)
 
-
-That's a horribly ugly default. You can change the built-in heatmap function, but others are better.
+That's a horribly ugly default. You can change the built-in heatmap function, but others are better. 
 
 ```{r gplots_heatmap}
         # better heatmap with gplots
@@ -259,12 +268,12 @@ That's a horribly ugly default. You can change the built-in heatmap function, bu
 
 
 > Exercise
+> 
 > Can you change values in the color panel to make the heatmap more colorblind friendly?
 > 
 
 
-
-What about a histogram of the p-values? 
+Let's create a histogram of 
 
 ```{r plot_pval_hist}
         # Examine plot of p-values
@@ -272,8 +281,13 @@ What about a histogram of the p-values?
 ```
 ![](../assets/img/histogram_respvalue.png)
 
+>Exercise
+>
+>Make a ggplot2 equivalent of the histogram above.
+>
 
-Let's plot an MA-plot. This shows the fold change versus the overall expression values.
+Let's plot an MA  plot. This shows the fold change versus the overall expression values. A MA-plot which is a scatter plot of log2 fold changes (M, on the y-axis) versus the average expression signal (A, on the x-axis). M = log2(x/y) and A = (log2(x) + log2(y))/2 = log2(xy)*1/2, where x and y are respectively the means of the two groups being compared, cerebellum and heart.
+
 
 ```{r MA_plot}
         with(res, plot(baseMean, log2FoldChange, pch=16, cex=.5, log="x"))
@@ -285,7 +299,7 @@ Let's plot an MA-plot. This shows the fold change versus the overall expression 
         with(subset(res, padj<.05), textxy(baseMean, log2FoldChange, labs=Gene, cex=1, col="red"))
 ```
 
-Let's create a volcano plot.
+Let's create a volcano plot. The volcano plot shows on shows the -log10pvalue (adjuted) against the logFC. The higher the value of the -log10pval, the greater the confidence in the log FC is not random.
 
 ```{r volcano_plot}
         par(pch=16)
@@ -293,11 +307,14 @@ Let's create a volcano plot.
         with(subset(res, padj<.05 ), points(log2FoldChange, -log10(pvalue), col="red"))
         with(subset(res, abs(log2FoldChange)>2), points(log2FoldChange, -log10(pvalue), col="orange"))
         with(subset(res, padj<.05 & abs(log2FoldChange)>2), points(log2FoldChange, -log10(pvalue), col="green"))
+
         # Add legend
         legend("topleft", legend=c("FDR<0.05", "|LFC|>2", "both"), pch=16, col=c("red","orange","green"))
         # Label points
         with(subset(res, padj<.05 & abs(log2FoldChange)>2), textxy(log2FoldChange, -log10(pvalue), labs=Gene, cex=1))
 ```
+Every dot represents a gene (not an isoform). This is because we are using the transcriptome as the reference where each transcript name begins with “ENST”, we collapsed those counts from transcripts to gene. An example of a transcript that has a negative log FC due to being highly expressed in cerebellum, relative to the control heart sample. It codes for a transcript of the gene [ZIC1](http://asia.ensembl.org/Homo_sapiens/Gene/Summary?g=ENSG00000152977;r=3:147393422-147510293) which is a member of the transcription factor C2H2-type zinc finger family that are key during developement. has been documented in medulloblastoma, a chldhood brain tumour.
+
 ![](../assets/img/volcano.png)
 
 
