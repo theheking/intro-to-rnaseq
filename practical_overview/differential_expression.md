@@ -207,7 +207,7 @@ Combine DEseq results with the original counts data. Write significant results t
 
 We can also do some exploratory plotting of the data.
 
-The differential expression analysis above operates on the raw (normalized) count data. But for visualizing or clustering data as you would with a microarray experiment, you ned to work with transformed versions of the data. First, use a *regularlized log* transofmration while re-estimating the dispersion ignoring any information you have about the samples (`blind=TRUE`). Perform a principal components analysis and hierarchical clustering.
+The differential expression analysis above operates on the raw (normalized) count data. But for visualizing or clustering data as you would with a microarray experiment, you need to work with transformed versions of the data. First, use a *regularized log* transformation while re-estimating the dispersion ignoring any information you have about the samples (`blind=TRUE`). Perform a principal components analysis and hierarchical clustering.
 
 ```{r}
         # Transform
@@ -216,6 +216,8 @@ The differential expression analysis above operates on the raw (normalized) coun
         # Principal components analysis
         plotPCA(rld, intgroup="source_name")
 ```
+
+![](../assets/img/PCA.png)
 
 
 ```
@@ -239,6 +241,8 @@ Let's plot a heatmap.
         sampledistmat <- as.matrix(sampledist)
         heatmap(sampledistmat)
 ```
+![](../assets/img/heatmap.png)
+
 
 That's a horribly ugly default. You can change the built-in heatmap function, but others are better.
 
@@ -247,17 +251,27 @@ That's a horribly ugly default. You can change the built-in heatmap function, bu
         heatmap.2(sampledistmat)
         heatmap.2(sampledistmat, key=FALSE, trace="none")
         colorpanel(10, "black", "white")
-        heatmap.2(sampledistmat, col=colorpanel(64, "black", "white"), key=FALSE, trace="none")
-        heatmap.2(sampledistmat, col=colorpanel(64, "steelblue", "white"), key=FALSE, trace="none")
+
         heatmap.2(sampledistmat, col=colorpanel(64, "red", "white", "blue"), key=FALSE, trace="none")
 ```
+![](../assets/img/heatmap_gplots.png)
 
-What about a histogram of the p-values?
+
+
+> Exercise
+> Can you change values in the color panel to make the heatmap more colorblind friendly?
+> 
+
+
+
+What about a histogram of the p-values? 
 
 ```{r plot_pval_hist}
         # Examine plot of p-values
         hist(res$pvalue, breaks=50, col="grey")
 ```
+![](../assets/img/histogram_respvalue.png)
+
 
 Let's plot an MA-plot. This shows the fold change versus the overall expression values.
 
@@ -284,6 +298,7 @@ Let's create a volcano plot.
         # Label points
         with(subset(res, padj<.05 & abs(log2FoldChange)>2), textxy(log2FoldChange, -log10(pvalue), labs=Gene, cex=1))
 ```
+![](../assets/img/volcanoplot.png)
 
 
 
