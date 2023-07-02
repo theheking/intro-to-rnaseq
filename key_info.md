@@ -28,7 +28,8 @@ All the courses will assume prior knowledge from [Intro to R](https://theheking.
  - RStudio and R installed (see the instructions below)
  - A login to the wolfpack
    - See the instructions below and also instructions from the [intranet](https://intranet.gimr.garvan.org.au/display/HPC/Wolfpack+Cluster+-+Getting+started).
-   - If you can `ssh` in by running the command below
+   -  If you can `ssh` in by running the command below
+- **Optional:** Code Editor, see below 
 
  
 ## At the end of the workshop you will be able to:
@@ -45,6 +46,11 @@ All the courses will assume prior knowledge from [Intro to R](https://theheking.
 DSP Helpdesk
 ==============
 To ask help from Derrick and select the [portal](https://jira.gimr.garvan.org.au/servicedesk/customer/portal/20) or email dsphelp@garvan.org.au 
+
+Installing Code Editor
+=======================
+We would also recommend installing a code editor. Our team will be using vim to write scripts. However, Visual Studio Codes is a better, less error-prone method of writing code. Feel free to use your editor of choice.
+You can install Visual Studio Codes from https://code.visualstudio.com/.
 
 
 Accessing the Wolfpack, Garvan's HPC
