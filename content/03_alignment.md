@@ -14,7 +14,7 @@ Approximate time: 90 minutes
 
 ## Read Alignment
 
-<img src="../img/RNAseqWorkflow.png" width="400">
+<img src="../assets/content/RNAseqWorkflow.png" width="400">
 
 Now that we have explored the quality of our raw reads, we can move on to read alignment. We perform read alignment or mapping to determine where in the genome the reads originated from. The alignment process consists of choosing an appropriate reference genome to map our reads against and performing the read alignment using one of several splice-aware alignment tools such as [STAR](http://bioinformatics.oxfordjournals.org/content/early/2012/10/25/bioinformatics.bts635) or [HISAT2](http://ccb.jhu.edu/software/hisat2/index.shtml). The choice of aligner is often a personal preference and also dependent on the computational resources that are available to you.
 
@@ -34,23 +34,23 @@ STAR is shown to have high accuracy and outperforms other aligners by more than 
 For every read that STAR aligns, STAR will search for the longest sequence that exactly matches one or more locations on the reference genome. These longest matching sequences are called the Maximal Mappable Prefixes (MMPs):
 
 
-![STAR_step1](../img/alignment_STAR_step1.png)
+![STAR_step1](../assets/content/alignment_STAR_step1.png)
 	
 The different parts of the read that are mapped separately are called 'seeds'. So the first MMP that is mapped to the genome is called *seed1*.
 
 STAR will then search again for only the unmapped portion of the read to find the next longest sequence that exactly matches the reference genome, or the next MMP, which will be *seed2*. 
 
-![STAR_step2](../img/alignment_STAR_step2.png)
+![STAR_step2](../assets/content/alignment_STAR_step2.png)
 
 This sequential searching of only the unmapped portions of reads underlies the efficiency of the STAR algorithm. STAR uses an uncompressed suffix array (SA) to efficiently search for the MMPs, this allows for quick searching against even the largest reference genomes. Other slower aligners use algorithms that often search for the entire read sequence before splitting reads and performing iterative rounds of mapping.
 
 **If STAR does not find an exact matching sequence** for each part of the read due to mismatches or indels, the previous MMPs will be extended.
 
-![STAR_step3](../img/alignment_STAR_step3.png)
+![STAR_step3](../assets/content/alignment_STAR_step3.png)
 
 **If extension does not give a good alignment**, then the poor quality or adapter sequence (or other contaminating sequence) will be soft clipped.
 
-![STAR_step4](../img/alignment_STAR_step4.png)
+![STAR_step4](../assets/content/alignment_STAR_step4.png)
 
 
 #### Clustering, stitching, and scoring
@@ -59,7 +59,7 @@ The separate seeds are stitched together to create a complete read by first clus
 
 Then the seeds are stitched together based on the best alignment for the read (scoring based on mismatches, indels, gaps, etc.). 
 
-![STAR_step5](../img/alignment_STAR_step5.png)
+![STAR_step5](../assets/content/alignment_STAR_step5.png)
 
 ## Running STAR
 
