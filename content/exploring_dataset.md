@@ -38,6 +38,18 @@ There are many repositories for public data. Some model organisms or fields have
 
 An overview of RNA-sequencing data
 ------------------------------------
+
+> Exercise
+> --------
+> Start thinking about what are:
+>
+> a) biological questions you want to ask with RNA data
+>
+> b) what are the confounding factors you might face
+> 
+
+
+
 In a perfect world, RNA-Seq might work something like this:
 
 1. We know the location of every single gene in the genome (even genes that are identical duplicates of each other).
@@ -62,11 +74,13 @@ With paired-end sequencing, both ends of the fragment are sequenced. With single
 
 Accessing the original archived data
 ------------------------------------
-The [sequencing dataset (from Brawand, _et al._ 2011) adapted for this lesson] was obtained from the [NCBI Sequence Read Archive](https://www.ncbi.nlm.nih.gov/sra), which is a large (~27 petabasepairs/2.7 x 10^16 basepairs as of April 2019) repository for next-generation sequence data. 
+The sequencing dataset was obtained from the [NCBI Sequence Read Archive](https://www.ncbi.nlm.nih.gov/sra), which is a large (~27 petabasepairs/2.7 x 10^16 basepairs as of April 2019) repository for next-generation sequence data. 
 
-Please check your groups, and find your group number by clicking Practical Overview, then Sample Dataset on the class website. **Each student will have a paper that they share with their group but, a distinct subset of chromosomes from the dataset. This will mean everyone’s results will be unique as we run through the practical. **
+Please look at your tables and select a Sample Dataset on the class website that best suits the group. **Each indiviudal will have a paper that they share with their group but a distinct subset of chromosomes from the dataset. This will mean everyone’s results will be unique as we run through the practical.**
 
-### Locating the Run Selector Table for the Brawand Dataset on the SRA
+
+
+### Locating the Run Selector Table
 
 Very often there will be a direct link (perhaps in the supplemental information) to where the SRA dataset can be found. If we open the paper and scroll down to sections such as Accession Codes, Data Availability ect. will have a direct link of the accession code for Gene expression omnibus starting with GSE[NUMBER]. 
 
@@ -76,8 +90,6 @@ My paper link is: https://www.nature.com/articles/nature10532#accession-codes
 
 *** For this tutorial, I have provided you all with show you how to access data and metadata. However, for this course, we have already prepared the FASTQ files to make them smaller and less computationally demanding. ***
 
-
-**You will be given a paper per table**
 
 The paper for your given table can be found on the **Sample Datasets*** tab.
 
@@ -92,9 +104,9 @@ The paper for your given table can be found on the **Sample Datasets*** tab.
 
 3.	 Navigate back to the GEO Accession page. For a more organized table, select “SRA Run Selector”. This takes you to the Run Selector page for your dataset only. 
 
-### Download the Brawand Metadata from the SRA Run Selector Table
+### Download the Metadata from the SRA Run Selector Table
 
-1.  This is NCBI’s cloud-based SRA interface. You will be presented with a page for the overall SRA accession 	SRP007412 - this is a collection of all the experimental data.
+1.  This is NCBI’s cloud-based SRA interface. You will be presented with a page for the overall SRA accession SRP007412 - this is a collection of all the experimental data.
     
 2.  Notice on this page there are three sections. “Common Fields” “Select”, and “Found 149 Items”. Within “Found 149 Items”, click on the first Run Number (Column “Run” Row “1”). 
 
@@ -125,13 +137,14 @@ Using your choice of a spreadsheet program, open the `SraRunTable.csv` file.
 > Discussion
 > ----------
 > 
-> Discuss within your groups your dataset
+> Discuss within your tables your dataset
 > 
 > 1.  What was the experimental control used in this experiment?
 > 2.  What was the sequencing platform used for this experiment?
 > 3.  Are the samples in the experiment paired-end or single-end sequencing data?
 > 4.  What other kind of data is available, that is not included in your given SraRunTable?
 > 5. What data is missing from your SraRunTable which would be useful to know?
+>    
 
 
 ***Supplementary information***
