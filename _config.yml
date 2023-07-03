@@ -30,6 +30,9 @@ navbar-links:
     - 4) Using Kallisto for Pseudoalignment: "content/alignment"
     - 5) Using DESeq2 for Differential Expression Analysis: "content/differential_expression"
     - 6) Understanding the Theory Behind Differential Expression Analysis: "content/differential_expression_theory"
+    - Extension) Understanding Alignment with STAR: "content/alignment_star"
+    - Extension) Understanding BAM output with STAR: "content/alignment_star_bam"
+
     
 
 
