@@ -467,7 +467,11 @@ This might include installing [Anaconda](https://docs.anaconda.com/free/anaconda
   
   After running multiqc, please transfer your html file **multiqc_report.html** using scp to your local machine and examine the output file.
 
+Please download the example of this file type.
 
+```
+wget https://github.com/theheking/intro-to-rnaseq/blob/gh-pages/content/fastqc/multiqc_report.html [your_location_here]
+```
 
 
 > Exercise
