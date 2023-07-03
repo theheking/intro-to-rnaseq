@@ -451,9 +451,13 @@ We have now looked at quite a few “Per base sequence quality” FastQC graphs,
 
 
 
+Extension Work
+===============
+
 Using MultiQC to Simplify the FastqC html output
 -------------------------------------------------
-It is hard to read through all html files at once. A great tool to make a summary of the QC files is `multiqc`. Remember to perform both the `module avail 2&>1 | grep multiqc` and `module load` commands.
+It is hard to read through all html files at once. A great tool to make a summary of the QC files is `multiqc`. However, this module does not work on the HPC. You will have to run through the installation instructions [here](https://multiqc.info/docs/getting_started/installation/).
+This might include installing [Anaconda](https://docs.anaconda.com/free/anaconda/install/index.html) to create environments and make sure installations are in sync.
 
     $ multiqc . 
     
@@ -462,6 +466,8 @@ It is hard to read through all html files at once. A great tool to make a summar
   
   
   After running multiqc, please transfer your html file **multiqc_report.html** using scp to your local machine and examine the output file.
+
+
 
 
 > Exercise
