@@ -28,8 +28,9 @@ navbar-links:
     - 2) Using FASTQC For Data Quality Report: "content/fastqc"
     - 3) Using Trimmomatic for Trimming and Filtering: "content/trimming"
     - 4) Using Kallisto for Pseudoalignment: "content/alignment"
+    - Extension) Understanding Pseudoalignment: "content/kallisto_alignment_explained"
     - 5) Using DESeq2 for Differential Expression Analysis: "content/differential_expression"
-    - 6) Understanding the Theory Behind Differential Expression Analysis: "content/differential_expression_theory"
+    - Extension) Understanding the Theory Behind Differential Expression Analysis: "content/differential_expression_theory"
     - Extension) Understanding Alignment with STAR: "content/alignment_star"
     - Extension) Understanding BAM output with STAR: "content/alignment_star_bam"
 
