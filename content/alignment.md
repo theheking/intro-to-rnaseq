@@ -7,6 +7,8 @@ title: 4) Using Kallisto for Pseudoalignment
 > --------
 > **Questions**
 > 
+> * What is pseudo-alignment?
+>   
 > *  How do I perform pseudo-alignment to map the transcriptome of my sample?
 >     
 > 
@@ -31,11 +33,15 @@ Kallisto is a quick, highly-efficient software for quantifying transcript abunda
 
 Pseudoalignment and Genomics Word Search Explained
 =====================================================
-Alignment of reads is an expansive topic. Several reviews cover some of the important topics including [Stark et. al. 2019](https://www.nature.com/articles/s41576-019-0150-2). This [blog post](http://tinyheero.github.io/2015/09/02/pseudoalignments-kallisto.html) and the [kallisto paper](https://www.nature.com/articles/nbt.3519) are further readings to get a deep understanding of the subject.
+
+For this workshop, we use the strategy for quantification called transcriptome mapping or pseudo-alignment, and not splice-aware alignment. Tools that fall in this category include [Kallisto](https://pachterlab.github.io/kallisto/about), [Sailfish](http://www.nature.com/nbt/journal/v32/n5/full/nbt.2862.html) and [Salmon](https://combine-lab.github.io/salmon/); each working slightly different from one another. 
+
+Alignment of reads is an expansive topic. Several reviews cover some of the important topics including [Stark et. al. 2019](https://www.nature.com/articles/s41576-019-0150-2). This [blog post](http://tinyheero.github.io/2015/09/02/pseudoalignments-kallisto.html) and the [kallisto paper](https://www.nature.com/articles/nbt.3519) are further readings to get a deep understanding of the subject. See also the Extension tasks of using STAR alignment.
+
 
 To try and reduce this problem to its most basic, the Leo Pachter Lab used an analogy. 
 
-In the traditional case, when software does alignment, it tries to match a read to the genome.
+In the traditional case, when software does an alignment, it tries to match a read to the genome.
  
 >
 >       Genome: ACTACGTAGCCGTCAAATATCCCGGGTATCGTACGATCGACGT
@@ -99,11 +105,11 @@ In the word search below is the word “DNA”. Can you find it? It may take you
 >MWFHPISMEIUIVZVBEUKTFOUADMUDXAJSGYHLXUSP
 >OSIVVLZMDTLDMCLGZLEGWLPVPWOLNERAINTAESFR
  
-Pseudoalignment is one approach to this computational “word search”. It takes advantage of a trick to speed up performance without loosing accuracy. Take the second line in our “DNA” word search puzzle:
+Pseudoalignment is one approach to this computational “word search”. It takes advantage of a trick to speed up performance without losing accuracy. Take the second line in our “DNA” word search puzzle:
 
 >MOBJEYXAZMPMFENZHQKMHHSCZUXUQYEBQONJVYWH
 
-There is no “D” in this line. True, We don’t know that until we read the entire line, but once we realize this line can’t possible be a match without a “D” We can ignore this line. Word search puzzles don’t have to be read in just one direction (words might be on diagonals, backwards, etc.), but now consider what happens in the pseudoalignment “word search”. In this case we are searching not the entire genome, but linear transcripts:
+There is no “D” in this line. True, We don’t know that until we read the entire line, but once we realize this line can’t possibly be a match without a “D” We can ignore this line. Word search puzzles don’t have to be read in just one direction (words might be on diagonals, backwards, etc.), but now consider what happens in the pseudo alignment “word search”. In this case, we are searching not the entire genome, but linear transcripts:
 
 
 >Transcript 1: CUSVFVMAASJFHUTMNCCQMBVXOLBEETYHSRBWOSEY
@@ -126,29 +132,27 @@ We can immediately eliminate transcripts that don’t contain the letter D:
 Immediately, the problem is made easier by throwing away transcripts that could not contain the answer. This is not an exact analogy but basically, rather than trying to match every read to every position in the genome, Kallisto is faster because 1) we are only matching to the transcriptome (a subset of the genome) and 2) we focus only on transcripts that could have generated a particular read.
 
 
-> Note
-Pseudoalignment is just one approach to aligning RNA-Seq reads. Other software will do full alignments of the read to a transcriptome or genome. These methods have different advantages and requirements.
-
-
-
-## Lightweight alignment and quantification of gene expression
-
-This strategy for quantification is called transcriptome mapping, and not splice-aware alignment. Tools that fall in this category include [Kallisto](https://pachterlab.github.io/kallisto/about), [Sailfish](http://www.nature.com/nbt/journal/v32/n5/full/nbt.2862.html) and [Salmon](https://combine-lab.github.io/salmon/); each working slightly different from one another. (For this workshop we will explore Kallisto in more detail.) 
-
-
-Common to all of these tools is that **base-to-base alignment of the reads is avoided**, which is a time-consuming step, and these tools **provide quantification estimates much faster than do standard approaches** (typically more than 20 times faster) with **improvements in accuracy** at **the transcript level**. 
-
-
+Common to kallisto, sailfish and salmon is the process outlined above. This is that **base-to-base alignment of the reads is avoided**, which is a time-consuming step, and these tools **provide quantification estimates much faster than do standard approaches** (typically more than 20 times faster) with **improvements in accuracy** at **the transcript level**. 
 
 These transcript expression estimates, often referred to as 'pseudocounts', can be converted for use with DGE tools like DESeq2 (using [tximport](https://bioconductor.org/packages/release/bioc/html/tximport.html)) or the estimates can be used directly for isoform-level differential expression using a tool like [Sleuth](http://www.biorxiv.org/content/biorxiv/early/2016/06/10/058164.full.pdf). 
 
 <img src="../assets/img/salmon_workflow_updated.png" width="400">
 
-The improvement in accuracy for lightweight alignment tools in comparison with the standard alignment/counting methods primarily relates to the ability of the lightweight alignment tools to quantify multi mapping reads. 
+The improvement in accuracy for lightweight alignment tools in comparison with the standard alignment/counting methods primarily relates to the ability of the lightweight alignment tools to quantify multi-mapping reads. 
 
 
-<img src="../assets/img/Precisionrecall.svm.png" width="400">
+Usually as a method to benchmark computational tools, the precision and recall statistics are used. This means:
+- the higher the precision, the lower the number of FP, the more items that are relevant are discovered
+- the higher the recall, the lower the number of FN, the more relevant items are retrieved
 
+Ideally, you want to maximise both precision and recall - but often it is a compromise.
+
+<img src="../assets/img/Precisionrecall.svg.png" width="400">
+
+
+
+
+This has been shown by Robert et. al and Williams et al. by comparing the accuracy of different alignment/quantification methods to estimate the gene expression of RNA-Seq using synthetic reads. [[1](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-015-0734-x)]. This means reads that have been computationally made so we know what kallisto and STAR should be making. 
 
 
 | Read aligner | RA code | Expression modeler | EM code | Differential expression | DE code |
@@ -167,37 +171,34 @@ The improvement in accuracy for lightweight alignment tools in comparison with t
 |              |         | eXpress            | Xs      | SAMseq                  | Sa      |
 |              |         |                    |         | Sleuth                  | Su      |
 
+# Table showing the codes used in the visualisation below from Williams et al. 
 
 
-<img src="../assets/img/williams_rna_seq.jpeg" width="400">
 
 
 
-This has been shown by Robert et. al and Williams et al. by comparing the accuracy of different alignment/quantification methods to estimate the gene expression of RNA-Seq. [[1](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-015-0734-x)].
 
-As shown in the figures below taken from the paper, the **standard alignment and counting methods such as STAR/htseq or Tophat2/htseq result in underestimates of many genes - particularly those genes comprised of multimapping reads** [[1](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-015-0734-x)]. 
 
-While the STAR/htseq standard method of alignment and counting is a bit conservative and can result in false negatives, **Cufflinks tends to overestimate gene expression and results in many false positives**, which is why Cufflinks is generally not recommended for gene expression quantification.
+<img src="../assets/img/williams_rna_seq.jpeg" width="1000">
 
-Finally, the most accurate quantification of gene expression was achieved using the lightweight alignment tool Sailfish (if used without bias correction).
-
-Lightweight alignment tools such as Sailfish, Kallisto, and Salmon have generally been found to yield the most accurate estimations of transcript/gene expression. Salmon is considered to have some improvements relative to Sailfish, and it is considered to give very similar results to Kallisto. 
+A few key points to take away from these graphs:
+- The best method of aligning, expression modelling and DE for genes and transcripts are distinct
+- There is a general trade-off, between precision and recall with our RNA-seq pipelines - e.g. the higher the precision, the lower the recall and vice versa.
+- Lightweight alignment tools such as Sailfish, Kallisto, and Salmon have generally been found to yield the most accurate estimations of transcript expression. Salmon is considered to have some improvements relative to Sailfish, and it is considered to give very similar results to Kallisto. 
 
 
 What is Kallisto?
 ==================
 
 Kallisto is based on the philosophy of lightweight algorithms, which use the reference transcriptome (in FASTA format) and raw sequencing reads (in FASTQ format) as input, but do not align the full reads. These tools perform both mapping and quantification. Unlike most lightweight and standard alignment/quantification tools, **Kallisto has a flag that utilizes sample-specific bias models for transcriptome-wide abundance estimation**. Sample-specific bias models are helpful when needing to account for known biases present in RNA-Seq data including:
+ 
+ - GC bias
+ - positional coverage biases
+ - sequence biases at 5' and 3' ends of the fragments
+ - fragment length distribution
+ - strand-specific methods
 
-- GC bias
-- positional coverage biases
-- sequence biases at 5' and 3' ends of the fragments
-- fragment length distribution
-- strand-specific methods
-
-If not accounted for, these biases can lead to unacceptable false positive rates in differential expression studies [[2](http://salmon.readthedocs.io/en/latest/salmon.html#quasi-mapping-based-mode-including-lightweight-alignment)]. The **Kallisto algorithm can learn these sample-specific biases and account for them in the transcript abundance estimates**. Kallisto is extremely fast at "mapping" reads to the transcriptome and often more accurate than standard approaches.
-
-
+If not accounted for, these biases can lead to unacceptable false positive rates in differential expression studies. 
 
 ### How does Kallisto estimate transcript abundances?
 
