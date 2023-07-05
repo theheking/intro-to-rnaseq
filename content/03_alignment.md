@@ -44,23 +44,24 @@ STAR is shown to have high accuracy and outperforms other aligners by more than 
 
 For every read that STAR aligns, STAR will search for the longest sequence that exactly matches one or more locations on the reference genome. These longest matching sequences are called the Maximal Mappable Prefixes (MMPs):
 
-![STAR_step1](../assests/img/alignment_STAR_step1.png)
+<img src="../assets/img/alignment_STAR_step1.png" width="400">
+
 	
 The different parts of the read that are mapped separately are called 'seeds'. So the first MMP that is mapped to the genome is called *seed1*.
 
 STAR will then search again for only the unmapped portion of the read to find the next longest sequence that exactly matches the reference genome, or the next MMP, which will be *seed2*. 
 
-![STAR_step2](../assests/img/alignment_STAR_step2.png)
+<img src="../assets/img/alignment_STAR_step2.png" width="400">
 
 This sequential searching of only the unmapped portions of reads underlies the efficiency of the STAR algorithm. STAR uses an uncompressed suffix array (SA) to efficiently search for the MMPs, this allows for quick searching against even the largest reference genomes. Other slower aligners use algorithms that often search for the entire read sequence before splitting reads and performing iterative rounds of mapping.
 
 **If STAR does not find an exact matching sequence** for each part of the read due to mismatches or indels, the previous MMPs will be extended.
 
-![STAR_step3](../assests/img/alignment_STAR_step3.png)
+<img src="../assets/img/alignment_STAR_step3.png" width="400">
 
 **If extension does not give a good alignment**, then the poor quality or adapter sequence (or other contaminating sequence) will be soft clipped.
 
-![STAR_step4](../assests/img/alignment_STAR_step4.png)
+<img src="../assets/img/alignment_STAR_step4.png" width="400">
 
 
 #### Clustering, stitching, and scoring
@@ -69,7 +70,7 @@ The separate seeds are stitched together to create a complete read by first clus
 
 Then the seeds are stitched together based on the best alignment for the read (scoring based on mismatches, indels, gaps, etc.). 
 
-![STAR_step5](../assests/img/alignment_STAR_step5.png)
+<img src="../assets/img/alignment_STAR_step5.png" width="400">
 
 
 ## Running STAR
