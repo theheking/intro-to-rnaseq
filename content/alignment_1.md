@@ -150,6 +150,7 @@ The improvement in accuracy for lightweight alignment tools in comparison with t
 <img src="../assets/img/Precisionrecall.svm.png" width="400">
 
 
+
 | Read aligner | RA code | Expression modeler | EM code | Differential expression | DE code |
 | ------------ | ------- | ------------------ | ------- | ----------------------- | ------- |
 | Bowtie2      | Bw      | BitSeq             | Bs      | Ballgown                | Bl      |
@@ -172,10 +173,9 @@ The improvement in accuracy for lightweight alignment tools in comparison with t
 
 
 
-This has been shown by Robert et. al by comparing the accuracy of 12 different alignment/quantification methods using simulated data to estimate the gene expression of 1000 perfect RNA-Seq read pairs from each of of the genes [[1](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-015-0734-x)].
+This has been shown by Robert et. al and Williams et al. by comparing the accuracy of different alignment/quantification methods to estimate the gene expression of RNA-Seq. [[1](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-015-0734-x)].
 
 As shown in the figures below taken from the paper, the **standard alignment and counting methods such as STAR/htseq or Tophat2/htseq result in underestimates of many genes - particularly those genes comprised of multimapping reads** [[1](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-015-0734-x)]. 
-
 
 While the STAR/htseq standard method of alignment and counting is a bit conservative and can result in false negatives, **Cufflinks tends to overestimate gene expression and results in many false positives**, which is why Cufflinks is generally not recommended for gene expression quantification.
 
@@ -235,8 +235,7 @@ There are a few files we need to perform the first step of Kallisto
 - Reference annotations: A file with information on the location and structure of the genes in the human genome and a file with chromosome details.
   
   
-  
-
+ 
 We will now use Kallisto's indexing function to prepare the transcriptome for analysis. The "Index" is a lookup table for the transcriptome that allows it to be more easily searched by Kallisto. First, let's organize our files by creating a new directory to hold our kallisto work.
 
     $ mkdir -p /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/kallisto_human_ref/
@@ -386,5 +385,9 @@ If you have paired-end reads. **Hint: check the string provided as the second pa
   
   Adapted from https://cyverse-leptin-rna-seq-lesson-dev.readthedocs-hosted.com
   and https://pachterlab.github.io/kallisto/manual and https://raw.githubusercontent.com/hbctraining/Intro-to-rnaseq-hpc-O2/master/lessons/08_salmon.md from Mary Piper and Meeta Mistry
+
+
+
+
+
   
-![image](https://github.com/theheking/intro-to-rnaseq/assets/36276388/659b3797-f59c-43d1-bc07-9fce124ae0b3)
