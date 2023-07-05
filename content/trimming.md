@@ -286,7 +286,7 @@ We have now completed the trimming and filtering steps of our quality control pr
 Running via qsub
 ----------------
 
-Please find an example of a `trimmomatic.sh` file that I would be able to submit to the head node. 
+Please find an example of the contents of a `trimmomatic.sh` file that I would be able to submit to the SGE queue. 
 
 
 ```
