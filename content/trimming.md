@@ -30,10 +30,35 @@ In the previous session, we took a high-level look at the quality of each of our
 
 We will use a program called [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic) to filter poor quality reads and trim poor quality bases from our samples.
 
-Trimmomatic options
+Trimmomatic install
 -------------------
 
 Trimmomatic has a variety of options to trim your reads. If we run the following command, we can see some of our options. (Hint: might need to use ` module load`)
+
+> Hint: some modules do not work depending on the user that made them. We have to do a local installation instead
+>
+
+```
+    wget http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/Trimmomatic-0.39.zip
+    unzip Trimmomatic-0.39.zip
+    java -jar Trimmomatic-0.39/trimmomatic-0.39.jar
+
+```
+
+If using the installation method above, instead of module load, the trimmomatic command needs to not be run with a simple `trimmomatic` but instead has to be run using `java -jar`.
+
+```
+
+TRIMMOMATIC="/share/ScratchGeneral/helkin/rna-seq-tutorial/Trimmomatic-0.39/trimmomatic-0.39.jar"
+java -jar ${TRIMMOMATIC}
+
+```
+
+
+Trimmomatic options
+-------------------
+
+Run the trimmomatic command 
 
     $ trimmomatic
     
@@ -256,7 +281,44 @@ We have now completed the trimming and filtering steps of our quality control pr
     $ mkdir TRIMMED_FASTA
     $ mv ./UNTRIMMED_FASTA/*.trim* TRIMMED_FASTA
     $ ls
-    
+
+
+Running via qsub
+----------------
+
+Please find an example of a `trimmomatic.sh` file that I would be able to submit to the head node. 
+
+
+```
+#$ -S /bin/sh
+#$ -pe smp 2
+#$ -cwd
+#making sure bashprofile is loaded -this depends on whether this is in your /home/user/ folder
+#. ~/.bash_profile
+#loading module path for setting up environment within qsub job
+export MODULEPATH=/share/ClusterShare/Modules/modulefiles/contrib/centos7.8:$MODULEPATH
+#this is the module i need to run
+module load phuluu/fastqc/0.11.9
+#module load centos7.8/phuluu/fastqc/0.11.9
+echo "check my script"
+​
+​
+cd /share/ScratchGeneral/[yourID]/rnaseq_tutorial/UNTRIMMED_FASTA/
+TRIMMOMATIC="/share/ScratchGeneral/[yourID]/rna-seq-tutorial/Trimmomatic-0.39/trimmomatic-0.39.jar"
+ADAPTERSEQ="/share/ScratchGeneral/[yourID]/rna-seq-tutorial/Trimmomatic-0.39/adapters/TruSeq2-SE.fa"
+​
+for infile in *3.fastq.gz
+do
+    echo ${infile}
+    base=$(basename ${infile} .fastq.gz)
+    outfile="${base}.trimmed.fastq.gz"
+    java -jar ${TRIMMOMATIC} SE -phred33 ${infile} \
+    ${outfile} ILLUMINACLIP:${ADAPTERSEQ}:2:30:10 \
+    LEADING:3 TRAILING:3 SLIDINGWINDOW:4:15 MINLEN:50
+done
+
+
+```
 
 > Bonus exercise (advanced)
 > -------------------------
