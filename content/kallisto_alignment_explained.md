@@ -4,7 +4,7 @@ title: Extension) Understanding Kallisto
 subtitle: Adapted from Meeta Mistry, Bob Freeman and Mary Piper
 ---
 
-More involved explanation
+Behind the Scenes: Kallisto
 =========================
 
 #### **Indexing**
