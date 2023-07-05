@@ -1,18 +1,27 @@
 ---
-title: "SAM/BAM file and assessing quality "
-author: "Meeta Mistry, Bob Freeman"
-date: "Tuesday, June 28, 2016"
+layout: page
+title: Extension) Understanding bam file and STAR Output
+subtitle: Adapted from Meeta Mistry, Bob Freeman and Mary Piper
 ---
 
-Approximate time: 120 minutes
 
-## Learning objectives
-
-* Evaluating the STAR aligner output files
-* Understanding the standard alignment file (SAM/BAM) structure
-* Using `samtools` to evaluate alignment quality 
-* Visualizing alignment quality using IGV (genome browser)  
-
+> Overview
+> --------
+> **Questions**
+> 
+> *  How do I perform pseudo-alignment to map the transcriptome of my sample?
+>     
+> 
+> **Objectives**
+> 
+> * Evaluating the STAR aligner output files
+>   
+> * Understanding the standard alignment file (SAM/BAM) structure
+>   
+> * Using `samtools` to evaluate alignment quality
+>   
+> * Visualizing alignment quality using IGV (genome browser)
+>   
 
 ## Assessing alignment quality
 
@@ -92,7 +101,7 @@ VN: program version
 
 Following the header is the **alignment section**. Each line that follows corresponds to alignment information for a single read. Each alignment line has **11 mandatory fields for essential mapping information** and a variable number of other fields for aligner specific information. 
 
-![SAM1](../img/assets/sam_bam.png)
+![SAM1](../assets/img/sam_bam.png)
 
 An example read mapping is displayed above. *Note that the example above spans two lines, but in the file it is a single line.* Let's go through the fields one at a time. 
 
@@ -124,7 +133,7 @@ In our example we have a number that exist in the table, making it relatively ea
 
 Now to the remaning fields in our SAM file:
 
-![SAM1](../img/assets/sam_bam3.png)
+![SAM1](../assets/img/sam_bam3.png)
 
 The next three fields are more pertinent to paired-end data. `MRNM` is the mate reference name. `MPOS` is the mate position (1-based, leftmost). `ISIZE` is the inferred insert size.
 
@@ -214,7 +223,7 @@ $ scp user_name@o2.hms.harvard.edu:/home/$USER/unix_lesson/rnaseq/results/Mov10_
 * Load the .bam file using the **"Load from File..."** option under the **"File"** pull-down menu. *IGV requires the .bai file to be in the same location as the .bam file that is loaded into IGV, but there is no direct use for that file.*
 * Type MOV10 into the search bar.
 
-![IGV screenshot](../img/assets/IGV_mov10.png)
+![IGV screenshot](../assets/img/IGV_mov10.png)
 
 ***
 
