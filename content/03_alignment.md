@@ -1,20 +1,31 @@
 ---
-title: "Alignment with STAR"
-author: "Meeta Mistry, Bob Freeman, Mary Piper"
-date: Wednesday, June 7, 2017
+layout: page
+title: Extension) Understanding and Using STAR
+subtitle: Adapted from Meeta Mistry, Bob Freeman and Mary Piper
 ---
 
-Approximate time: 90 minutes
+> Overview
+> --------
+> **Questions**
+> 
+> *  How do I perform pseudo-alignment to map the transcriptome of my sample?
+>     
+> 
+> **Objectives**
+> 
+> * Understanding the alignment method STAR utilizes to align sequence reads to the reference genome
+>     
+> * Identifying the intricacies of alignment tools used in NGS analysis (parameters, usage, etc)
+>     
+> *  Submit your job to the cluster
 
-## Learning Objectives:
 
-* Understanding the alignment method STAR utilizes to align sequence reads to the reference genome
-* Identifying the intricacies of alignment tools used in NGS analysis (parameters, usage, etc)
-* Choosing appropriate STAR alignment parameters for our dataset
+
 
 ## Read Alignment
+==================
 
-<img src="../assets/content/RNAseqWorkflow.png" width="400">
+<img src="../assets/img/RNAseqWorkflow.png" width="400">
 
 Now that we have explored the quality of our raw reads, we can move on to read alignment. We perform read alignment or mapping to determine where in the genome the reads originated from. The alignment process consists of choosing an appropriate reference genome to map our reads against and performing the read alignment using one of several splice-aware alignment tools such as [STAR](http://bioinformatics.oxfordjournals.org/content/early/2012/10/25/bioinformatics.bts635) or [HISAT2](http://ccb.jhu.edu/software/hisat2/index.shtml). The choice of aligner is often a personal preference and also dependent on the computational resources that are available to you.
 
@@ -33,24 +44,23 @@ STAR is shown to have high accuracy and outperforms other aligners by more than 
 
 For every read that STAR aligns, STAR will search for the longest sequence that exactly matches one or more locations on the reference genome. These longest matching sequences are called the Maximal Mappable Prefixes (MMPs):
 
-
-![STAR_step1](../assets/content/alignment_STAR_step1.png)
+![STAR_step1](../assests/img/alignment_STAR_step1.png)
 	
 The different parts of the read that are mapped separately are called 'seeds'. So the first MMP that is mapped to the genome is called *seed1*.
 
 STAR will then search again for only the unmapped portion of the read to find the next longest sequence that exactly matches the reference genome, or the next MMP, which will be *seed2*. 
 
-![STAR_step2](../assets/content/alignment_STAR_step2.png)
+![STAR_step2](../assests/img/alignment_STAR_step2.png)
 
 This sequential searching of only the unmapped portions of reads underlies the efficiency of the STAR algorithm. STAR uses an uncompressed suffix array (SA) to efficiently search for the MMPs, this allows for quick searching against even the largest reference genomes. Other slower aligners use algorithms that often search for the entire read sequence before splitting reads and performing iterative rounds of mapping.
 
 **If STAR does not find an exact matching sequence** for each part of the read due to mismatches or indels, the previous MMPs will be extended.
 
-![STAR_step3](../assets/content/alignment_STAR_step3.png)
+![STAR_step3](../assests/img/alignment_STAR_step3.png)
 
 **If extension does not give a good alignment**, then the poor quality or adapter sequence (or other contaminating sequence) will be soft clipped.
 
-![STAR_step4](../assets/content/alignment_STAR_step4.png)
+![STAR_step4](../assests/img/alignment_STAR_step4.png)
 
 
 #### Clustering, stitching, and scoring
@@ -59,7 +69,8 @@ The separate seeds are stitched together to create a complete read by first clus
 
 Then the seeds are stitched together based on the best alignment for the read (scoring based on mismatches, indels, gaps, etc.). 
 
-![STAR_step5](../assets/content/alignment_STAR_step5.png)
+![STAR_step5](../assests/img/alignment_STAR_step5.png)
+
 
 ## Running STAR
 
@@ -67,34 +78,20 @@ Then the seeds are stitched together based on the best alignment for the read (s
 
 To get started with this lesson, start an interactive session with 6 cores:
 
-```bash
-$ srun --pty -p short -t 0-12:00 -c 6 --mem 8G --reservation=HBC /bin/bash	
+```
+$ qrsh -
 ```
 
 You should have a directory tree setup similar to that shown below. it is best practice to have all files you intend on using for your workflow present within the same directory. In our case, we have our original FASTQ files generated in the previous section. 
 
-```bash
-rnaseq
-	├── logs
-	├── meta
-	├── raw_data
-	│   ├── Irrel_kd_1.subset.fq
-	│   ├── Irrel_kd_2.subset.fq
-	│   ├── Irrel_kd_3.subset.fq
-	│   ├── Mov10_oe_1.subset.fq
-	│   ├── Mov10_oe_2.subset.fq
-	│   └── Mov10_oe_3.subset.fq
-	├── results
-	└── scripts
-```
-
 To use the STAR aligner, load the module: 
 
-```bash
-$ module load gcc/6.2.0 star/2.5.2b
+```
+	$ export MODULEPATH=/share/ClusterShare/Modules/modulefiles/contrib/centos7.8:$MODULEPATH
+	$ module load centos7.8/joaach/STAR/2.7.7a
 ```
 
-Aligning reads using STAR is a two step process:   
+Aligning reads using STAR is a two-step process:   
 
 1. Create a genome index 
 2. Map reads to the genome
@@ -134,19 +131,14 @@ $ vim ~/unix_lesson/rnaseq/scripts/genome_index.run
 Within `vim` we now add our shebang line, the SLURM directives, and our STAR command. 
 
 ```bash
-#!/bin/bash
+#$ -S /bin/sh
+#$ -pe smp 2
+#$ -cwd
+#making sure bashprofile is loaded -this depends on whether this is in your /home/user/ folder
+#. ~/.bash_profile
+#loading module path for setting up environment within qsub job
+export MODULEPATH=/share/ClusterShare/Modules/modulefiles/contrib/centos7.8:$MODULEPATH
 
-#SBATCH -p short 		# partition name
-#SBATCH -t 0-2:00 		# hours:minutes runlimit after which job will be killed
-#SBATCH -c 6 		# number of cores requested -- this needs to be greater than or equal to the number of cores you plan to use to run your job
-#SBATCH --mem 16G
-#SBATCH --job-name STAR_index 		# Job name
-#SBATCH -o %j.out			# File to which standard out will be written
-#SBATCH -e %j.err 		# File to which standard err will be written
-
-cd /n/scratch2/username/
-
-module load gcc/6.2.0 star/2.5.2b
 
 STAR --runThreadN 6 \
 --runMode genomeGenerate \
