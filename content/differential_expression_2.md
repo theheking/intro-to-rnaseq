@@ -141,6 +141,7 @@ That's a horribly ugly default. You can change the built-in heatmap function, bu
 
 
 > Exercise
+> ---------
 > 
 > Can you change values in the colour panel to make the heatmap more colorblind-friendly?
 > 
@@ -157,6 +158,7 @@ Let's create a histogram of the p-values
 
 
 >Exercise
+>-------
 >
 >Make a ggplot2 equivalent of the histogram above.
 >
@@ -167,22 +169,46 @@ Let's plot an MA  plot. This shows the fold change versus the overall expression
 
 
 Let's remake the MA plot but this time 
-
-
+```
+        plotMA(res, ylim=c(-2,2))
 
 ```
-        plot(resLFC$baseMean, resLFC$log2FoldChange, pch=16, cex=.5, log="x")
-        resLFC_subset <- subset(resLFC, padj<.05)
-        plot(resLFC_subset$baseMean, resLFC_subset$log2FoldChange, pch=16, cex=.5, log="x", col="red")       
-        resLFC$Gene <- rownames(resLFC)
-        head(resLFC)
-        textxy(resLFC_subset$baseMean, resLFC_subset$log2FoldChange, labs=resLFC$Gene, cex=1, col="red")
+
+
+
+>Exercise
+>-------
+>
+> What does your MA plot display?
+>
+
+
+Heatmap
+-------
+
 ```
+        dds <- estimateSizeFactors(dds)
+        select <- order(rowMeans(counts(dds,normalized=TRUE)),decreasing=TRUE)[1:20]
+        df <- as.data.frame(colData(dds)[,c("source_name")])
+        colnames(df) <- "Source Name"
+        rownames(df) <- rownames(colData(dds))
+        
+        pheatmap(assay(rld)[select,], cluster_rows=FALSE, show_rownames=FALSE,
+                 cluster_cols=FALSE, annotation_col=df)
+```
+![](../assets/img/histogram_respvalue.png)
 
-> Exercise
-> =========
-> Could you plot textxy but only with the top 10 most DEG
 
+
+>Exercise
+>-------
+>
+> Can you make this colorblind friendly?
+>
+
+
+Volcano plot
+------------
 
 Let's create a volcano plot. The volcano plot shows on shows the -log10pvalue (adjuted) against the logFC. The higher the value of the -log10pval, the greater the confidence in the log FC is not random.
 
