@@ -451,12 +451,34 @@ Now, let's use the `results()` function to pull out the results from the `dds` o
         res <- results(dds)
         head(res)
         
+```
+
+
+
+> Exercise
+> -------
+> 
+> How should you handle technical and biological replicates? Investigate the `collapseReplicates` command with `help` command to understand more
+> 
+
+
+
+```
+
         # Order by adjusted p-value
         res <- res[order(res$padj), ]
         head(res)
         resultsNames(dds)
+
 ```
 
+
+
+> Exercise
+> -------
+> If my control vs exp comparison is the wrong way round you need to use the function `dds$source_name <= relevel(dds$source_name)` and rerun the DESeq core commands.
+> If you have multiple levels, and one to investigate one of interes
+> `results(dds, contrast = c('gender', 'male','female')
 
 
 ## Data Visualization of Shrinkage
