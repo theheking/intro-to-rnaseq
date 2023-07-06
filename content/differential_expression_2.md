@@ -196,7 +196,7 @@ Heatmap
         pheatmap(assay(rld)[select,], cluster_rows=FALSE, show_rownames=FALSE,
                  cluster_cols=FALSE, annotation_col=df)
 ```
-![](../assets/img/histogram_respvalue.png)
+![](../assets/img/heatmap_deg.png)
 
 
 
