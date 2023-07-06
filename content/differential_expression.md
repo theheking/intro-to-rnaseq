@@ -168,18 +168,6 @@ The data.frame contains information about transcripts (one transcript per row) w
         dds <- DESeqDataSetFromTximport(countData=txi.kallisto, colData=metadata, design=~source_name)
 ```
 
-> Exercise 
-> There's an R function called `rowSums()` that calculates the sum of each row in a numeric matrix, like the count matrix we have here, and it returns a vector. There's also a function called `which.max()` that determines the index of the maximum value in a vector.
-> 1. Find the gene with the highest expression across all samples -- remember, each row is a gene.
-> 2. Extract the expression data for this gene for all samples.
-> 3. In which sample does it have the highest expression?
-> 4. What is the function of the gene? Can you suggest why this is the top expressed gene?
-
-```
-        topGene <- which.max(rowSums(countdata))
-        topGene
-        countdata[topGene, ]
-```
 
 Next, let's run the DESeq pipeline on the dataset, and reassign the resulting object back to the same variable. Before we start, `dds` is a bare-bones DESeqDataSet. The `DESeq()` function takes a DESeqDataSet and returns a DESeqDataSet, but with lots of other information filled in (normalization, results, etc). Here, we're running the DESeq pipeline on the `dds` object, and reassigning the whole thing back to `dds`, which will now be a DESeqDataSet populated with results.
 
