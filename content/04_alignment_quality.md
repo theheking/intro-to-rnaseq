@@ -27,7 +27,7 @@ subtitle: Adapted from Meeta Mistry, Bob Freeman and Mary Piper
 
 After running our single FASTQ file through the STAR aligner, you should have noticed a number of output files in the `~/unix_workshop/rnaseq/results/STAR` directory. Let's take a quick look at some of the files that were generated and explore the content of some of them. 
 
-	$ cd ~/unix_lesson/rnaseq/results/STAR
+	$ cd /share/ScratchGeneral/[your_ID]/STAR_output/
 	
 	$ ls -lh
 
@@ -43,7 +43,7 @@ What you should see, is that for each FASTQ file you have **5 output files** and
 
 Having completed the alignment, the first thing we want to know is how well did our reads align to the reference. Rather than looking at each read alignment, it can be more useful to evaluate statistics that give a general overview for the sample. One of the output files from the STAR aligner contains mapping statistics, let's take a closer look at one of those files. We'll use the `less` command which allows us to scroll through it easily: 
 
-	$ less Mov10_oe_1_Log.final.out
+	$ cat SRR306844chr1_chr3.final.out
 	
 The log file provides information on reads that 1) mapped uniquely, 2) reads that mapped to mutliple locations and 3) reads that are unmapped. Additionally, we get details on splicing, insertion and deletion. From this file the most informative statistics include the **mapping rate and the number of multimappers**.
 
@@ -55,7 +55,7 @@ The log file provides information on reads that 1) mapped uniquely, 2) reads tha
 
 **Exercise**
 
-Using the less command take a look at `Mov10_oe_1_Log.final.out` and answer the following questions:
+Using the less command take a look at `SRR306844chr1_chr3_Aligned.final.out` and answer the following questions:
 
 1. How many reads map to more than 10 locations on the genome?
 2. How many reads are unmapped due to read length?
@@ -145,7 +145,7 @@ Finally, you have the data from the original FASTQ file stored for each read. Th
 [SAMtools](http://www.htslib.org/) is a tool that provides alot of functionality in dealing with SAM files. SAMtools utilities include, but are not limited to, viewing, sorting, filtering, merging, and indexing alignments in the SAM format. In this lesson we will explore a few of these utilities on our alignment files. To use this we need to load the module.
 
 ```
-$ module load samtools/1.3.1
+$ module load centos7.8/qiadu/samtools/1.9
 ```
 
 ### Viewing the SAM file
@@ -155,7 +155,7 @@ Now that we have learned so much about the SAM file format, let's use `samtools`
 We will do the latter (since we don't really need it for downstream analysis) and scroll through the SAM file (using the up and down arrows) to see how the fields correspond to what we expected. Adding the `-h` flag allows to also view the header.
 
 ```
-$ samtools view -h Mov10_oe_1_Aligned.sortedByCoord.out.bam | less
+$ samtools view -h SRR306844chr1_chr3_Aligned.sortedByCoord.out.bam | less
 
 ``` 
 
@@ -164,7 +164,7 @@ $ samtools view -h Mov10_oe_1_Aligned.sortedByCoord.out.bam | less
 > Now we know that we have all of this information for each of the reads -- wouldn't it be useful to summarize and filter based on selected criteria? Suppose we wanted to set a **threshold on mapping quality**. For example, we want to know how many reads aligned with a quality score higher than 30. To do this, we can combine the `view` command with additional flags `q 30` and `-c` (to count):
 > 
 > ```
-> $ samtools view -q 30 -c Mov10_oe_1_Aligned.sortedByCoord.out.bam
+> $ samtools view -q 30 -c SRR306844chr1_chr3_Aligned.sortedByCoord.out.bam
 > 
 > ```
 > *How many of reads have a mapping quality of 30 or higher?*
@@ -176,10 +176,10 @@ $ samtools view -h Mov10_oe_1_Aligned.sortedByCoord.out.bam | less
 > 
 > ```
 > ## This will tell us how many reads are unmapped
-> $ samtools view -f 4 -c Mov10_oe_1_Aligned.sortedByCoord.out.bam
+> $ samtools view -f 4 -c SRR306844chr1_chr3_Aligned.sortedByCoord.out.bam
 > 
 > ## This should give us the remaining reads that do not have this flag set (i.e reads that are mapped)
-> $ samtools view -F 4 -c Mov10_oe_1_Aligned.sortedByCoord.out.bam
+> $ samtools view -F 4 -c SRR306844chr1_chr3_Aligned.sortedByCoord.out.bam
 > ```
 
 ### Indexing the BAM file
@@ -189,7 +189,7 @@ To perform some functions (i.e. subsetting, visualization) on the BAM file, an i
 To index the BAM file we use the `index` command:
 
 ```bash
-$ samtools index Mov10_oe_1_Aligned.sortedByCoord.out.bam
+$ samtools index SRR306844chr1_chr3_Aligned.sortedByCoord.out.bam
 ```
 
 This will create an index in the same directory as the BAM file, which will be identical to the input file in name but with an added extension of `.bai`.
@@ -208,12 +208,12 @@ First, identify the location of the _origin file_ you intend to copy, followed b
 
 The following 2 files need to be moved from O2 to your local machine,
  
-`Mov10_oe_1_Aligned.sortedByCoord.out.bam`,
+`SRR306844chr1_chr3.sortedByCoord.out.bam`,
 
-`Mov10_oe_1_Aligned.sortedByCoord.out.bam.bai` 
+`SRR306844chr1_chr3.sortedByCoord.out.bam.bai` 
 
 ```
-$ scp user_name@o2.hms.harvard.edu:/home/$USER/unix_lesson/rnaseq/results/Mov10_oe_1_Aligned.sortedByCoord.out.bam* /path/to/directory_on_laptop
+$ scp [your_ID]@dice02:/share/ScratchGeneral/[your_ID]/STAR_output/SRR306844chr1_chr3.sortedByCoord.out.bam* /path/to/directory_on_laptop
 ```
 
 ### Visualize
@@ -233,4 +233,4 @@ Take a look at a few genes by typing into the search bar. Anything interesting a
 
 ***
 
-*This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
+*This lesson has been adapted from a course developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
