@@ -18,6 +18,8 @@ title: 6) Using DESeq2 for Differential Expression Analysis
 
 ---------------------------------------
 
+
+
 The differential expression analysis above operates on the raw (normalized) count data. But for visualizing or clustering data as you would with a microarray experiment, you need to work with transformed versions of the data. First, use a *regularized log* transformation while re-estimating the dispersion ignoring any information you have about the samples (`blind=TRUE`). The point of this is to try to stabilise the variance across all genes. This corrects for sample variability, specifically with lower counts. 
 
 Perform a principal components analysis and hierarchical clustering. PCA is a method to visualise the similarity or dissimilarity between each sample. We would expect the samples to cluster based on tissue. This is because we would expect the cerebellum samples to be more similar to each other than the heart samples. In our MDS plot, we can see SRR306844chr1_chr3 clustering distinctly from all other samples. If not clustering well, it is an indicator of a contaminated sample or confounding factor not taken into account.
@@ -68,6 +70,7 @@ Let's look at a single gene across the groups:
         plotCounts(dds, gene=which.min(resLFC$padj), intgroup="source_name")
 ```
 
+![](../assets/img/single_gene.png)
 
 > Exercise
 > --------
@@ -97,7 +100,7 @@ Let's look at a single gene across the groups:
 >        sampledist <- dist(t(assay(rld)))
 >        plot(hclust(sampledist))
 >```
-![](../assets/img/dendrogram.png)
+
 
 
 
@@ -111,6 +114,8 @@ Let's plot a heatmap that also visualised the similarity/dissimilarity across sa
         heatmap(sampledistmat)
 ```
 ![](../assets/img/heatmap.png)
+
+
 
 That's a horribly ugly default. You can change the built-in heatmap function, but others are better. 
 
@@ -149,13 +154,18 @@ Let's create a histogram of the p-values
 ```
 ![](../assets/img/histogram_respvalue.png)
 
+
+
 >Exercise
 >
 >Make a ggplot2 equivalent of the histogram above.
 >
 
 
-## MAplot with annotations!!! Very exciting
+## MA plot with annotations!!! Very exciting
+Let's plot an MA  plot. This shows the fold change versus the overall expression values. A MA-plot is a scatter plot of log2 fold changes (M, on the y-axis) versus the average expression signal (A, on the x-axis). M = log2(x/y) and A = (log2(x) + log2(y))/2 = log2(xy)*1/2, where x and y are respectively the means of the two groups being compared, cerebellum and heart. 
+
+
 Let's remake the MA plot but this time 
 
 
@@ -196,16 +206,11 @@ Every dot represents a gene (not an isoform). This is because we are using the t
 
 
 > Exercise
->-----------
->
->  Read about multifactor designs in the [DESeq2 vignette](http://www.bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.pdf) for cases where you have multiple variables of interest (e.g. irradiated vs controls in multiple tissue types).
+> -----------
+> This is the ugliest graph ever, can you make it a bit nicer on the eyes?
+> 
 
 
-
-
-
-
-
-
+--------------------------
 
 Beginning section Edited from [Training-modules](https://github.com/hbctraining/Training-modules) 
