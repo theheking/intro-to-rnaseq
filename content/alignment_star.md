@@ -109,8 +109,8 @@ For this workshop we are using reads that originate from a small subsection of c
 To store our genome indices, we will use the `/n/scratch2/` space with large temporary storage capacity. We need to create a directory for the indices within this space:
 
 ```bash
-	mkdir -p /share/ScratchGeneral/helkin/rnaseq_tutorial/star_human_ref/
-	cd /share/ScratchGeneral/helkin/rnaseq_tutorial/star_human_ref/
+	mkdir -p /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/star_human_ref/
+	cd /share/ScratchGeneral/[your_ID]/rnaseq_tutorial/star_human_ref/
 	wget https://ftp.ensembl.org/pub/release-109/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
 	wget https://ftp.ensembl.org/pub/release-109/gtf/homo_sapiens/Homo_sapiens.GRCh38.109.chr.gtf.gz
 
@@ -130,8 +130,8 @@ The basic options to **generate genome indices** using STAR are as follows:
 Now let's create a job submission script to generate the genome index:
 
 ```bash
-	$ mkdir /share/ScratchGeneral/helkin/scripts/
-	$ vim /share/ScratchGeneral/helkin/scripts/STAR_index.run
+	$ mkdir /share/ScratchGeneral/[your_ID]/scripts/
+	$ vim /share/ScratchGeneral/[your_ID]/scripts/STAR_index.run
 ```
 Within `vim` we now add our shebang line, the SLURM directives, and our STAR command. 
 
@@ -150,8 +150,8 @@ export MODULEPATH=/share/ClusterShare/Modules/modulefiles/contrib/centos7.8:$MOD
 
 RUN_MODE="genomeGenerate"
 GENOME_DIR="/share/ScratchGeneral/[your_ID]/rnaseq_tutorial/STAR/"
-GENOME_FASTA="/share/ClusterShare/biodata/contrib/helkin/GRCh38_STAR_index_ENSEMBL/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
-GTF_FILE="/share/ClusterShare/biodata/contrib/helkin/Hg38_STAR_index_ENSEMBL/Homo_sapiens.GRCh38.102.chr.gtf"
+GENOME_FASTA="/share/ClusterShare/biodata/contrib/[your_ID]/GRCh38_STAR_index_ENSEMBL/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
+GTF_FILE="/share/ClusterShare/biodata/contrib/[your_ID]/Hg38_STAR_index_ENSEMBL/Homo_sapiens.GRCh38.102.chr.gtf"
 STAR --runThreadN 8 \
   --runMode genomeGenerate \
   --genomeDir ${genome_Dir} \
@@ -170,8 +170,8 @@ STAR --runThreadN 8 \
 Create an output directory for our alignment files:
 
 ```bash
-	mkdir -p /share/ScratchGeneral/helkin/STAR_output/
-	cd /share/ScratchGeneral/helkin/STAR_output/
+	mkdir -p /share/ScratchGeneral/[your_ID]/STAR_output/
+	cd /share/ScratchGeneral/[your_ID]/STAR_output/
 ```
 
 ### STAR command in interactive bash
