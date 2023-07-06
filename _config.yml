@@ -29,8 +29,8 @@ navbar-links:
     - 3) Using Trimmomatic for Trimming and Filtering: "content/trimming"
     - 4) Using Kallisto for Pseudoalignment: "content/alignment"
     - Extension) Understanding Pseudoalignment: "content/kallisto_alignment_explained"
-    - 5) Using DESeq2 for Differential Expression Analysis: "content/differential_expression"
-    - Extension) Understanding the Theory Behind Differential Expression Analysis: "content/differential_expression_theory"
+    - 5) Importing into DESeq2: "content/differential_expression"
+    - 6) Using DESeq2 for Differential Expression Analysis: "content/differential_expression_2"
     - Extension) Understanding Alignment with STAR: "content/alignment_star"
     - Extension) Understanding BAM output with STAR: "content/alignment_star_bam"
 
