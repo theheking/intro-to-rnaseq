@@ -454,14 +454,7 @@ Now, let's use the `results()` function to pull out the results from the `dds` o
         # Order by adjusted p-value
         res <- res[order(res$padj), ]
         head(res)
-```
-
-We provide the dds object and the name or number of the coefficient we want to shrink, where the number refers to the order of the coefficient as it appears in resultsNames(dds). Learn more about shrinkage [here](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#altshrink).
-
-```
         resultsNames(dds)
-        resLFC <- lfcShrink(dds, coef="source_name_Heart_vs_Cerebellum", type="apeglm")
-
 ```
 
 
@@ -469,7 +462,6 @@ We provide the dds object and the name or number of the coefficient we want to s
 ## Data Visualization of Shrinkage
 We can also do some exploratory plotting of the data.
 
-Let's plot an MA  plot. This shows the fold change versus the overall expression values. A MA-plot which is a scatter plot of log2 fold changes (M, on the y-axis) versus the average expression signal (A, on the x-axis). M = log2(x/y) and A = (log2(x) + log2(y))/2 = log2(xy)*1/2, where x and y are respectively the means of the two groups being compared, cerebellum and heart. 
 
 Visualisation of the effect of the shrunkenlog2 fold changes
 
