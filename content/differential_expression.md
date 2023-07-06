@@ -94,6 +94,8 @@ To install one of these packages, you would use `install.packages("packagename")
 ```
         install.packages("gplots")
         install.packages("calibrate")
+        install.packages("ggplots2")
+
 ```
 
 Bioconductor packages work a bit differently, and are not hosted on CRAN. Go to <http://bioconductor.org/> to learn more about the Bioconductor project. To use any Bioconductor package, you'll need a few "core" Bioconductor packages. Run the following commands to (1) download the installer script, and (2) install some core Bioconductor packages. You'll need internet connectivity to do this, and it'll take a few minutes, but it only needs to be done once.
@@ -106,7 +108,8 @@ Bioconductor packages work a bit differently, and are not hosted on CRAN. Go to 
         BiocManager::install("DESeq2")
         BiocManager::install("GenomicFeatures")
         BiocManager::install("rhdf5")
-
+        BiocManager::install("vsn")
+        BiocManager::install("apeglm")
 ```
 
 To install specific packages, first download the installer script if you haven't done so, and use `biocLite("packagename")`. This only needs to be done once then you can load the package like any other package. Let's download the [DESeq2 package](http://www.bioconductor.org/packages/release/bioc/html/DESeq2.html):
@@ -114,13 +117,16 @@ To install specific packages, first download the installer script if you haven't
 Now let's load the packages we'll use:
 
 ```
-  
-        library(DESeq2)
-        library(gplots)
-        library(calibrate)
-        library(tximport)
-        library(GenomicFeatures)
-        library(rhdf5)
+        library("DESeq2")
+        library("gplots")
+        library("calibrate")
+        library("tximport")
+        library("GenomicFeatures")
+        library("rhdf5")
+        library("vsn")
+        library("pheatmap")
+        library(apeglm)
+        library("RColorBrewer")
 
 ```
 
@@ -193,54 +199,128 @@ Now, let's use the `results()` function to pull out the results from the `dds` o
         head(res)
 ```
 
+We provide the dds object and the name or number of the coefficient we want to shrink, where the number refers to the order of the coefficient as it appears in resultsNames(dds). Learn more about shrinkage [here](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#altshrink).
+
+```
+        resultsNames(dds)
+        resLFC <- lfcShrink(dds, coef="source_name_Heart_vs_Cerebellum", type="apeglm")
+
+```
+
+
+
+## Data Visualization of Shrinkage
+We can also do some exploratory plotting of the data.
+
+Let's plot an MA  plot. This shows the fold change versus the overall expression values. A MA-plot which is a scatter plot of log2 fold changes (M, on the y-axis) versus the average expression signal (A, on the x-axis). M = log2(x/y) and A = (log2(x) + log2(y))/2 = log2(xy)*1/2, where x and y are respectively the means of the two groups being compared, cerebellum and heart. 
+
+Visualisation of the effect of the shrunkenlog2 fold changes
+
+```
+        plotMA(res, ylim=c(-2,2))
+        plotMA(resLFC, ylim=c(-2,2))
+
+```
+
+![](../assets/img/b4.png)
+![](../assets/img/afta.png)
+
+## Writing out results to a file 
+
 Combine DEseq results with the original counts data. Write significant results to a file.
 
 ```
-        sig <- subset(res, padj<0.05)
+        sig <- results(dds, alpha=0.05)
         dir.create("results")
         write.csv(sig, file="results/sig.csv") # tab delim data
+        sum(res05$padj < 0.05, na.rm=TRUE)
+
 ```
 
 
-## Data Visualization
 
-We can also do some exploratory plotting of the data.
+The differential expression analysis above operates on the raw (normalized) count data. But for visualizing or clustering data as you would with a microarray experiment, you need to work with transformed versions of the data. First, use a *regularized log* transformation while re-estimating the dispersion ignoring any information you have about the samples (`blind=TRUE`). The point of this is to try to stabilise the variance across all genes. This corrects for sample variability, specifically with lower counts. 
 
-The differential expression analysis above operates on the raw (normalized) count data. But for visualizing or clustering data as you would with a microarray experiment, you need to work with transformed versions of the data. First, use a *regularized log* transformation while re-estimating the dispersion ignoring any information you have about the samples (`blind=TRUE`). 
+Perform a principal components analysis and hierarchical clustering. PCA is a method to visualise the similarity or dissimilarity between each sample. We would expect the samples to cluster based on tissue. This is because we would expect the cerebellum samples to be more similar to each other than the heart samples. In our MDS plot, we can see SRR306844chr1_chr3 clustering distinctly from all other samples. If not clustering well, it is an indicator of a contaminated sample or confounding factor not taken into account.
 
-Perform a principal components analysis and hierarchical clustering. PCA is a method to visualise the similarity or dissimilarity between each sample. We would expect the samples to cluster based on tissue. This is because we would expect the cerebellum samples to be more similar to each other than heart samples. In our MDS plot, we can see SRR306844chr1_chr3 clustering distinctly from all other samples. If not clustering well, it is an indicator of a contaminated sample or confounding factor not taken into account.
+Rlog does not use the design to remove variation in the data. It, therefore, does not remove variation that can be associated with batch or other covariates.
+
 
 ```
         # Transform
-        rld <- rlogTransformation(dds)
-        
+        rld <- rlog(dds, blind=TRUE)
+
+        #this shows the 
+        meanSdPlot(assay(rld))
+
         # Principal components analysis
         plotPCA(rld, intgroup="source_name")
+
 ```
+
 
 ![](../assets/img/PCA.png)
 
 
+
+
+
 > Exercise
 > ---------
-> Research how to do an elbow plot for the PCA plotted above.
-> 
-> Make all the plots more aesthetically pleasing.
+> Adapt the ggplot function below to make a prettier PCA
+> ```
+>        pcaData <- plotPCA(vsd, intgroup=c("source_name"), returnData=TRUE)
+>        percentVar <- round(100 * attr(pcaData, "percentVar"))
+>        ggplot(pcaData, aes(PC1, PC2, color=condition, shape=type)) +
+>          geom_point(size=3) +
+>          xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+>          ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+>          coord_fixed()
+>
+> ``` 
 > 
 
 
+## Data Visualization of A Single Gene
+
+Let's look at a single gene across the groups:
+
 ```
-        # Hierarchical clustering analysis
-        ## let's get the actual values for the first few genes
-        head(assay(rld))
-        ## now transpose those
-        t(head(assay(rld)))
-        ## now get the sample distances from the transpose of the whole thing
-        dist(t(assay(rld)))
-        sampledist <- dist(t(assay(rld)))
-        plot(hclust(sampledist))
+        plotCounts(dds, gene=which.min(resLFC$padj), intgroup="source_name")
 ```
+
+
+> Exercise
+> --------
+> 
+> Can you find a gene of interest within your chromosomes and paper that you would like to plot in a plot like above? Or using ggplot like in the code below (note you will have to adapt this to your paper?
+>
+```
+        d <- plotCounts(dds, gene=which.min(resLFC$padj), intgroup="source_name", 
+                        returnData=TRUE)
+        ggplot(d, aes(x=condition, y=count)) + 
+          geom_point(position=position_jitter(w=0.1,h=0)) + 
+          scale_y_log10(breaks=c(25,100,400))
+  
+```
+
+
+> Exercise
+>
+> ```
+>        # Hierarchical clustering analysis
+>        ## let's get the actual values for the first few genes
+>        head(assay(rld))
+>        ## now transpose those
+>        t(head(assay(rld)))
+>        ## now get the sample distances from the transpose of the whole thing
+>        dist(t(assay(rld)))
+>        sampledist <- dist(t(assay(rld)))
+>        plot(hclust(sampledist))
+>```
 ![](../assets/img/dendrogram.png)
+
+
 
 Let's plot a heatmap that also visualised the similarity/dissimilarity across samples.
 
@@ -256,12 +336,21 @@ Let's plot a heatmap that also visualised the similarity/dissimilarity across sa
 That's a horribly ugly default. You can change the built-in heatmap function, but others are better. 
 
 ```
-        # better heatmap with gplots
-        heatmap.2(sampledistmat)
-        heatmap.2(sampledistmat, key=FALSE, trace="none")
-        colorpanel(10, "black", "white")
+        sampleDists <- dist(t(assay(rld)))
+        sampleDistMatrix <- as.matrix(sampleDists)
+        rownames(sampleDistMatrix) <- paste(rld$source_name)
+        colnames(sampleDistMatrix) <- NULL
+        colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+        pheatmap(sampleDistMatrix,
+                 clustering_distance_rows=sampleDists,
+                 clustering_distance_cols=sampleDists,
+                 col=colors)
 
-        heatmap.2(sampledistmat, col=colorpanel(64, "red", "white", "blue"), key=FALSE, trace="none")
+        select <- order(rowMeans(counts(dds,normalized=TRUE)), decreasing=TRUE)[1:20]
+        df <- as.data.frame(colData(dds)[,c("source_name")])
+        pheatmap(assay(ntd)[select,], cluster_rows=FALSE, show_rownames=FALSE,
+                 cluster_cols=FALSE, annotation_col=df)
+
 ```
 ![](../assets/img/heatmap_gplots.png)
 
@@ -269,15 +358,15 @@ That's a horribly ugly default. You can change the built-in heatmap function, bu
 
 > Exercise
 > 
-> Can you change values in the color panel to make the heatmap more colorblind friendly?
+> Can you change values in the colour panel to make the heatmap more colorblind-friendly?
 > 
 
 
-Let's create a histogram of 
+Let's create a histogram of the p-values
 
 ```
         # Examine plot of p-values
-        hist(res$pvalue, breaks=50, col="grey")
+        hist(resLFC$pvalue, breaks=50, col="grey")
 ```
 ![](../assets/img/histogram_respvalue.png)
 
@@ -286,23 +375,31 @@ Let's create a histogram of
 >Make a ggplot2 equivalent of the histogram above.
 >
 
-Let's plot an MA  plot. This shows the fold change versus the overall expression values. A MA-plot which is a scatter plot of log2 fold changes (M, on the y-axis) versus the average expression signal (A, on the x-axis). M = log2(x/y) and A = (log2(x) + log2(y))/2 = log2(xy)*1/2, where x and y are respectively the means of the two groups being compared, cerebellum and heart.
+
+## MAplot with annotations!!! Very exciting
+Let's remake the MA plot but this time 
+
 
 
 ```
-        with(res, plot(baseMean, log2FoldChange, pch=16, cex=.5, log="x"))
-        with(subset(res, padj<.05), points(baseMean, log2FoldChange, col="red", pch=16))
-        
-
-        res$Gene <- rownames(res)
-        head(res)
-        with(subset(res, padj<.05), textxy(baseMean, log2FoldChange, labs=Gene, cex=1, col="red"))
+        plot(resLFC$baseMean, resLFC$log2FoldChange, pch=16, cex=.5, log="x")
+        resLFC_subset <- subset(resLFC, padj<.05)
+        plot(resLFC_subset$baseMean, resLFC_subset$log2FoldChange, pch=16, cex=.5, log="x", col="red")       
+        resLFC$Gene <- rownames(resLFC)
+        head(resLFC)
+        textxy(resLFC_subset$baseMean, resLFC_subset$log2FoldChange, labs=resLFC$Gene, cex=1, col="red")
 ```
+
+> Exercise
+> =========
+> Could you plot textxy but only with the top 10 most DEG
+
 
 Let's create a volcano plot. The volcano plot shows on shows the -log10pvalue (adjuted) against the logFC. The higher the value of the -log10pval, the greater the confidence in the log FC is not random.
 
 ```
-        par(pch=16)
+par(pch=16)
+        res$Gene <- rownames(res)
         with(res, plot(log2FoldChange, -log10(pvalue), main="Volcano plot"))
         with(subset(res, padj<.05 ), points(log2FoldChange, -log10(pvalue), col="red"))
         with(subset(res, abs(log2FoldChange)>2), points(log2FoldChange, -log10(pvalue), col="orange"))
