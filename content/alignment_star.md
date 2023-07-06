@@ -21,7 +21,6 @@ subtitle: Adapted from Meeta Mistry, Bob Freeman and Mary Piper
 
 
 
-
 ## Read Alignment
 ==================
 
@@ -110,7 +109,11 @@ For this workshop we are using reads that originate from a small subsection of c
 To store our genome indices, we will use the `/n/scratch2/` space with large temporary storage capacity. We need to create a directory for the indices within this space:
 
 ```bash
-$ mkdir -p /n/scratch2/username/chr1_hg38_index
+	mkdir -p /share/ScratchGeneral/helkin/rnaseq_tutorial/star_human_ref/
+	cd /share/ScratchGeneral/helkin/rnaseq_tutorial/star_human_ref/
+	wget https://ftp.ensembl.org/pub/release-109/fasta/homo_sapiens/dna/Homo_sapiens.GRCh38.dna.primary_assembly.fa.gz
+	wget https://ftp.ensembl.org/pub/release-109/gtf/homo_sapiens/Homo_sapiens.GRCh38.109.chr.gtf.gz
+
 ```
 
 The basic options to **generate genome indices** using STAR are as follows:
@@ -127,47 +130,53 @@ The basic options to **generate genome indices** using STAR are as follows:
 Now let's create a job submission script to generate the genome index:
 
 ```bash
-$ vim ~/unix_lesson/rnaseq/scripts/genome_index.run
+	$ mkdir /share/ScratchGeneral/helkin/scripts/
+	$ vim /share/ScratchGeneral/helkin/scripts/STAR_index.run
 ```
 Within `vim` we now add our shebang line, the SLURM directives, and our STAR command. 
 
 ```bash
 #$ -S /bin/sh
-#$ -pe smp 2
+#$ -q short.q
+#$ -pe smp 22
+#$ -j y
+#$ -b y
+
 #$ -cwd
 #making sure bashprofile is loaded -this depends on whether this is in your /home/user/ folder
 #. ~/.bash_profile
 #loading module path for setting up environment within qsub job
 export MODULEPATH=/share/ClusterShare/Modules/modulefiles/contrib/centos7.8:$MODULEPATH
 
+RUN_MODE="genomeGenerate"
+GENOME_DIR="/share/ScratchGeneral/[your_ID]/rnaseq_tutorial/STAR/"
+GENOME_FASTA="/share/ClusterShare/biodata/contrib/helkin/GRCh38_STAR_index_ENSEMBL/Homo_sapiens.GRCh38.dna.primary_assembly.fa"
+GTF_FILE="/share/ClusterShare/biodata/contrib/helkin/Hg38_STAR_index_ENSEMBL/Homo_sapiens.GRCh38.102.chr.gtf"
+STAR --runThreadN 8 \
+  --runMode genomeGenerate \
+  --genomeDir ${genome_Dir} \
+  --genomeFastaFiles ${GEN_FASTA} \
+  --sjdbGTFfile ${GEN_GTF}
 
-STAR --runThreadN 6 \
---runMode genomeGenerate \
---genomeDir chr1_hg38_index \
---genomeFastaFiles /n/groups/hbctraining/intro_rnaseq_hpc/reference_data_ensembl38/Homo_sapiens.GRCh38.dna.chromosome.1.fa \
---sjdbGTFfile /n/groups/hbctraining/intro_rnaseq_hpc/reference_data_ensembl38/Homo_sapiens.GRCh38.92.gtf \
---sjdbOverhang 99
+
 ```
 
 ```bash
-$ sbatch ~/unix_lesson/rnaseq/scripts/genome_index.run
+	qsub ~/unix_lesson/rnaseq/scripts/STAR_index.run
 ```
 
 ### Aligning reads
 
-After you have the genome indices generated, you can perform the read alignment. We previously generated the genome indices for you in `/n/groups/hbctraining/intro_rnaseq_hpc/reference_data_ensembl38/ensembl38_STAR_index/` directory so that we don't get held up waiting on the generation of the indices.
-
 Create an output directory for our alignment files:
 
 ```bash
-$ cd ~/unix_lesson/rnaseq/raw_data
-
-$ mkdir ../results/STAR
+	mkdir -p /share/ScratchGeneral/helkin/STAR_output/
+	cd /share/ScratchGeneral/helkin/STAR_output/
 ```
 
 ### STAR command in interactive bash
 
-For now, we're going to work on just one sample to set up our workflow. To start we will use the first replicate in the Mov10 over-expression group, `Mov10_oe_1.subset.fq`. Details on STAR and its functionality can be found in the [user manual](https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf); we encourage you to peruse through to get familiar with all available options.
+Details on STAR and its functionality can be found in the [user manual](https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf); we encourage you to peruse through to get familiar with all available options.
 
 The basic options for aligning reads to the genome using STAR are:
 
@@ -186,16 +195,24 @@ Listed below are additional parameters that we will use in our command:
 We can access the software by simply using the STAR command followed by the basic parameters described above and any additional parameters. The full command is provided below for you to copy paste into your terminal. If you want to manually enter the command, it is advisable to first type out the full command in a text editor (i.e. [Sublime Text](http://www.sublimetext.com/) or [Notepad++](https://notepad-plus-plus.org/)) on your local machine and then copy paste into the terminal. This will make it easier to catch typos and make appropriate changes. 
 
 ```bash
+RUN_MODE="alignReads"
+SAMPLE="/share/ScratchGeneral/[your_ID]/rnaseq_tutorial/TRIMMED_FASTA/SRR306844chr1_chr3.trimmed.fastq.gz"
+OUT_PREFIX="SRR306844chr1_chr3"
+SAM_TYPE="BAM SortedByCoordinate"
+GENOME_DIR="/share/ScratchGeneral/[your_ID]/rnaseq_tutorial/STAR/"
 
-STAR --genomeDir /n/groups/hbctraining/intro_rnaseq_hpc/reference_data_ensembl38/ensembl38_STAR_index/ \
+STAR --runMode "${RUN_MODE}" \
+--genomeDir ${GENOME_DIR} \
 --runThreadN 6 \
---readFilesIn Mov10_oe_1.subset.fq \
---outFileNamePrefix ../results/STAR/Mov10_oe_1_ \
---outSAMtype BAM SortedByCoordinate \
---outSAMunmapped Within \
---outSAMattributes Standard 
+--readFilesIn ${SAMPLE} \
+--outFileNamePrefix ${OUT_PREFIX} \
+--outSAMtype ${SAM_TYPE}
 
 ```
 
+> Exercise
+> =========
+> Automate the command above using a for loop across every sample. Hint: look at the trimmomatic for loop
+
 ---
-*This lesson has been developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
+*Adapted from a lesson  developed by members of the teaching team at the [Harvard Chan Bioinformatics Core (HBC)](http://bioinformatics.sph.harvard.edu/). These are open access materials distributed under the terms of the [Creative Commons Attribution license](https://creativecommons.org/licenses/by/4.0/) (CC BY 4.0), which permits unrestricted use, distribution, and reproduction in any medium, provided the original author and source are credited.*
