@@ -1,26 +1,22 @@
 ---
 layout: page
-title: 5) Using DESeq2 for Differential Expression Analysis
+title: 5) Importing Gene Count Matrix into DESeq2
 ---
 > Overview
 > --------
-> **Questions**
-> 
-> *   What are the top DEGs in our experiment? 
->     
-> 
+>
 > **Objectives**
 > 
-> *   Use DESeq2 to output top differentially expressed genes  
+> *   Import all kallisto output into DESEq input
 >  
-> *   Understand the best diagrams to show differentially expressed genes
+> *   Understand the normalisation
 > 
 
 ---------------------------------------
 
 The next step in the RNA-seq workflow is the differential expression analysis. Differential expression testing aims to determine which genes are expressed at different levels between conditions. These genes can offer biological insight into the processes affected by the condition(s) of interest.
 
-The steps outlined in the gray box below we have already discussed, and we will now continue to describe the steps in an **end-to-end gene-level RNA-seq differential expression workflow**.
+The steps outlined in the grey box below we have already discussed, and we will now continue to describe the steps in an **end-to-end gene-level RNA-seq differential expression workflow**.
 
 ![](../assets/img/de_workflow.png)
 
@@ -28,11 +24,193 @@ So what does the count data actually represent? The count data used for differen
 
 ![](../assets/img/deseq_counts_overview.png)
 
-***Note: We are using features that are transcripts, not genes***
 
-Counts and CPM
----------------
-Kallisto counts the number of reads that align to one transcript. This is the *raw count*; however, normalisation is needed to make accurate comparisons of gene expression between samples. Normalisation is used to account for variabilities between or within *raw counts* due to technical differences such as read depth. The default in DEGUST is *Counts per million (CPM)*. CPM accounts for sequencing depth. This is not the best normalisation method for differential expression analysis between samples. However, we are not going to learn R in this course, so we have to work with what we have. 
+
+
+![](../assets/img/expressed_genes.png)
+
+The schema above represents what has been calculated by Kallisto (except with transcripts). To summarise, the number of reads that map to a transcript in every sample across replciates in control (heart) and test (brain) groups. 
+However, we need to calculate the comparisons between the two groups and determine which transcripts change significantly between conditions e.g. Gene A and Gene B, or not, e.g. Gene C.
+
+This process is differential expression analysis. What is calculated at each stage includes:
+1. Reads 
+2. DESeq2's **median of ratio's**
+3. Log fold change, p-value, FDR (false discovery rate)
+
+
+This is performed by:
+1. Kallisto counts the number of reads that align to one transcript. This is the raw count, however, normalisation is needed to make accurate comparisons of gene expression between samples.
+2. Normalisation accounts for variabilities between or within raw counts due to technical differences such as read depth. The default in DEGUST is Counts per million (CPM). CPM accounts for sequencing depth. There are better normalisation methods for differential expression analysis between samples. However, we will not learn R in this course, so we must work with what we have. CPM (Counts Per Million) are obtained by dividing counts by the number of counts in the entire sample and multiplying the results by a million
+3. Fold change is the change in CPM between conditions. Log Fold change is the logarithm of the fold change calculated.
+A positive fold change indicates an increase in expression, and a negative fold change indicates a decrease in expression between the control (heart) and test (brain).
+In my experiment, I expect the isoforms that regulate neuronal-related processes to be upregulated and the isoforms that regulate cardiac processes to be downregulated.
+
+
+The picture attached shows that despite having the same log fold change, the lower p-value is correlated with lower intragroup variability. 
+This means we can be more certain that the difference in fold change is significant.
+![](../assets/img/expression_significance.png)
+
+Calculating the FDR is essential as we test significance across hundreds of genes and samples. A certain number of these log fold change calculations could have occurred by chance. However, by calculating the FDR, we can confidently identify the isoforms with differential expression between the brain and cerebellum.
+
+
+
+
+Normalization
+-------------
+
+The first step in the DE analysis workflow is count normalization, which is necessary to make accurate comparisons of gene expression between samples.
+
+The counts of mapped reads for each gene is proportional to the expression of RNA (“interesting”) in addition to many other factors (“uninteresting”). Normalization is the process of scaling raw count values to account for the “uninteresting” factors. In this way the expression levels are more comparable between and within samples.
+
+The main factors often considered during normalization are:
+
+*   **Sequencing depth:** Accounting for sequencing depth is necessary for comparison of gene expression between samples. In the example below, each gene appears to have doubled in expression in _Sample A_ relative to _Sample B_, however this is a consequence of _Sample A_ having double the sequencing depth.
+    
+    ![](../assets/img/normalization_methods_depth.png)
+    
+    > _**NOTE:** In the figure above, each pink and green rectangle represents a read aligned to a gene. Reads connected by dashed lines connect a read spanning an intron._
+    
+*   **Gene length:** Accounting for gene length is necessary for comparing expression between different genes within the same sample. In the example, _Gene X_ and _Gene Y_ have similar levels of expression, but the number of reads mapped to _Gene X_ would be many more than the number mapped to _Gene Y_ because _Gene X_ is longer.
+    
+    ![](../assets/img/normalization_methods_length.png)
+    
+*   **RNA composition:** A few highly differentially expressed genes between samples, differences in the number of genes expressed between samples, or presence of contamination can skew some types of normalization methods. Accounting for RNA composition is recommended for accurate comparison of expression between samples, and is particularly important when performing differential expression analyses \[[1](https://genomebiology.biomedcentral.com/articles/10.1186/gb-2010-11-10-r106)\].
+    
+    In the example, if we were to divide each sample by the total number of counts to normalize, the counts would be greatly skewed by the DE gene, which takes up most of the counts for _Sample A_, but not _Sample B_. Most other genes for _Sample A_ would be divided by the larger number of total counts and appear to be less expressed than those same genes in _Sample B_.
+    
+    ![](../assets/img/normalization_methods_composition_updated.png)
+    
+
+**_While normalization is essential for differential expression analyses, it is also necessary for exploratory data analysis, visualization of data, and whenever you are exploring or comparing counts between or within samples._**
+
+### Common normalization methods
+
+For DEGUST, we had to use CPM. This is not a good method for between sample comparisons. Manual analysis with R programming is superior to using DEGUST, however takes more time and experience to get to grips with!  
+
+Several common normalization methods exist to account for these differences:
+
+
+| Normalization method                                                                                                          | Description                                                                                                                  | Accounted factors                    | Recommendations for use                                                                                                 |
+| ----------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| **CPM** (counts per million)                                                                                                  | counts scaled by total number of reads                                                                                       | sequencing depth                     | gene count comparisons between replicates of the same samplegroup; **NOT for within sample comparisons or DE analysis** |
+| **TPM** (transcripts per kilobase million)                                                                                    | counts per length of transcript (kb) per million reads mapped                                                                | sequencing depth and gene length     | gene count comparisons within a sample or between samples of the same sample group; **NOT for DE analysis**             |
+| **RPKM/FPKM** (reads/fragments per kilobase of exon per million reads/fragments mapped)                                       | similar to TPM                                                                                                               | sequencing depth and gene length     | gene count comparisons between genes within a sample; **NOT for between sample comparisons or DE analysis**             |
+| DESeq2’s **median of ratios** \[[1](https://genomebiology.biomedcentral.com/articles/10.1186/gb-2010-11-10-r106)\]            | counts divided by sample-specific size factors determined by median ratio of gene counts relative to geometric mean per gene | sequencing depth and RNA composition | gene count comparisons between samples and for **DE analysis**; **NOT for within sample comparisons**                   |
+| EdgeR’s **trimmed mean of M values (TMM)** \[[2](https://genomebiology.biomedcentral.com/articles/10.1186/gb-2010-11-3-r25)\] | uses a weighted trimmed mean of the log expression ratios between samples                                                    | sequencing depth, RNA composition    | gene count comparisons between samples and for **DE analysis**; **NOT for within sample comparisons**                   |
+
+
+
+Counts and Median of Ratio Methods
+-----------------------------------
+Kallisto counts the number of reads that align to one transcript. This is the *raw count*; however, normalisation is needed to make accurate comparisons of gene expression between samples. Normalisation is used to account for variabilities between or within *raw counts* due to technical differences such as read depth. 
+
+
+RPKM/FPKM (not recommended)
+While TPM and RPKM/FPKM normalization methods both account for sequencing depth and gene length, RPKM/FPKM are not recommended. The reason is that the normalized count values output by the RPKM/FPKM method are not comparable between samples.
+
+Using RPKM/FPKM normalization, the total number of RPKM/FPKM normalized counts for each sample will be different. Therefore, you cannot compare the normalized counts for each gene equally between samples.
+**RPKM-normalized counts table**
+
+| gene                         | sampleA   | sampleB   |
+| ---------------------------- | --------- | --------- |
+| XCR1                         | 5.5       | 5.5       |
+| WASHC1                       | 73.4      | 21.8      |
+| …                            | …         | …         |
+| Total RPKM-normalized counts | 1,000,000 | 1,500,000 |
+
+For example, in the table above, SampleA has a greater proportion of counts associated with XCR1 (5.5/1,000,000) than does sampleB (5.5/1,500,000) even though the RPKM count values are the same. Therefore, we cannot directly compare the counts for XCR1 (or any other gene) between sampleA and sampleB because the total number of normalized counts are different between samples.
+
+** DESeq2-normalized counts: Median of ratios method ** 
+Since tools for differential expression analysis are comparing the counts between sample groups for the same gene, gene length does not need to be accounted for by the tool. However, sequencing depth and RNA composition do need to be taken into account.
+
+To normalize for sequencing depth and RNA composition, DESeq2 uses the median of ratios method. On the user-end there is only one step, but on the back-end there are multiple steps involved, as described below.
+
+NOTE: The steps below describe in detail some of the steps performed by DESeq2 when you run a single function to get DE genes. Basically, for a typical RNA-seq analysis, you would not run these steps individually.
+
+* Step 1: creates a pseudo-reference sample (row-wise geometric mean) *
+For each gene, a pseudo-reference sample is created that is equal to the geometric mean across all samples.
+
+| gene  | sampleA | sampleB | pseudo-reference sample    |
+| ----- | ------- | ------- | -------------------------- |
+| EF2A  | 1489    | 906     | sqrt(1489 * 906) = 1161.5 |
+| ABCD1 | 22      | 13      | sqrt(22 * 13) = 17.7      |
+| …     | …       | …       | …                          |
+
+
+* Step 2: calculates ratio of each sample to the reference *
+
+For every gene in a sample, the ratios (sample/ref) are calculated (as shown below). This is performed for each sample in the dataset. Since the majority of genes are not differentially expressed, the majority of genes in each sample should have similar ratios within the sample.
+
+| gene  | sampleA | sampleB | pseudo-reference sample | ratio of sampleA/ref | ratio of sampleB/ref |
+| ----- | ------- | ------- | ----------------------- | -------------------- | -------------------- |
+| EF2A  | 1489    | 906     | 1162                    | 1489/1161.5 = 1.28   | 906/1161.5 = 0.78    |
+| ABCD1 | 22      | 13      | 16.9                    | 22/16.9 = 1.30       | 13/16.9 = 0.77       |
+| MEFV  | 793     | 410     | 570.2                   | 793/570.2 = 1.39     | 410/570.2 = 0.72     |
+| BAG1  | 76      | 42      | 56.5                    | 76/56.5 = 1.35       | 42/56.5 = 0.74       |
+| MOV10 | 521     | 1196    | 883.7                   | 521/883.7 = 0.590    | 1196/883.7 = 1.35    |
+…	…	…	…	 
+
+* Step 3: calculate the normalization factor for each sample (size factor) *
+
+The median value (column-wise for the above table) of all ratios for a given sample is taken as the normalization factor (size factor) for that sample, as calculated below. Notice that the differentially expressed genes should not affect the median value:
+
+```
+normalization_factor_sampleA <- median(c(1.28, 1.3, 1.39, 1.35, 0.59))
+
+normalization_factor_sampleB <- median(c(0.78, 0.77, 0.72, 0.74, 1.35))
+```
+
+The figure below illustrates the median value for the distribution of all gene ratios for a single sample (frequency is on the y-axis).
+
+
+![](../assets/img/deseq_median_of_ratios.png)
+
+
+The median of ratios method makes the assumption that not ALL genes are differentially expressed; therefore, the normalization factors should account for sequencing depth and RNA composition of the sample (large outlier genes will not represent the median ratio values). This method is robust to imbalance in up-/down-regulation and large numbers of differentially expressed genes.
+
+Usually these size factors are around 1, if you see large variations between samples it is important to take note since it might indicate the presence of extreme outliers.
+
+* Step 4: calculate the normalized count values using the normalization factor *
+
+This is performed by dividing each raw count value in a given sample by that sample’s normalization factor to generate normalized count values. This is performed for all count values (every gene in every sample). For example, if the median ratio for SampleA was 1.3 and the median ratio for SampleB was 0.77, you could calculate normalized counts as follows:
+
+SampleA median ratio = 1.3
+
+SampleB median ratio = 0.77
+
+* Raw Counts *
+| gene  | sampleA | sampleB |
+| ----- | ------- | ------- |
+| EF2A  | 1489    | 906     |
+| ABCD1 | 22      | 13      |
+
+* Normalized Counts *
+* 
+| gene  | sampleA              | sampleB              |
+| ----- | -------------------- | -------------------- |
+| EF2A  | 1489 / 1.3 = 1145.39 | 906 / 0.77 = 1176.62 |
+| ABCD1 | 22 / 1.3 = 16.92     | 13 / 0.77 = 16.88    |
+
+Please note that normalized count values are not whole numbers.
+
+> Exercise
+> ======
+> Determine the normalized counts for your gene of interest, PD1, given the raw counts and size factors below.
+>
+> NOTE: You will need to run the code below to generate the raw counts dataframe (PD1) and the size factor vector (size_factors), then use these objects to determine the normalized counts values:
+```
+# Raw counts for PD1
+PD1 <- c(21, 58, 17, 97, 83, 10)
+names(PD1) <- paste0("Sample", 1:6)
+PD1 <- data.frame(PD1)
+PD1 <- t(PD1)
+
+# Size factors for each sample
+size_factors <- c(1.32, 0.70, 1.04, 1.27, 1.11, 0.85)
+
+```
+
+
 
 Using DESeq
 -------------
@@ -226,195 +404,3 @@ Combine DEseq results with the original counts data. Write significant results t
 ```
 
 
-
-The differential expression analysis above operates on the raw (normalized) count data. But for visualizing or clustering data as you would with a microarray experiment, you need to work with transformed versions of the data. First, use a *regularized log* transformation while re-estimating the dispersion ignoring any information you have about the samples (`blind=TRUE`). The point of this is to try to stabilise the variance across all genes. This corrects for sample variability, specifically with lower counts. 
-
-Perform a principal components analysis and hierarchical clustering. PCA is a method to visualise the similarity or dissimilarity between each sample. We would expect the samples to cluster based on tissue. This is because we would expect the cerebellum samples to be more similar to each other than the heart samples. In our MDS plot, we can see SRR306844chr1_chr3 clustering distinctly from all other samples. If not clustering well, it is an indicator of a contaminated sample or confounding factor not taken into account.
-
-Rlog does not use the design to remove variation in the data. It, therefore, does not remove variation that can be associated with batch or other covariates.
-
-
-```
-        # Transform
-        rld <- rlog(dds, blind=TRUE)
-
-        #this shows the 
-        meanSdPlot(assay(rld))
-
-        # Principal components analysis
-        plotPCA(rld, intgroup="source_name")
-
-```
-
-
-![](../assets/img/PCA.png)
-
-
-
-
-
-> Exercise
-> ---------
-> Adapt the ggplot function below to make a prettier PCA
-> ```
->        pcaData <- plotPCA(vsd, intgroup=c("source_name"), returnData=TRUE)
->        percentVar <- round(100 * attr(pcaData, "percentVar"))
->        ggplot(pcaData, aes(PC1, PC2, color=condition, shape=type)) +
->          geom_point(size=3) +
->          xlab(paste0("PC1: ",percentVar[1],"% variance")) +
->          ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
->          coord_fixed()
->
-> ``` 
-> 
-
-
-## Data Visualization of A Single Gene
-
-Let's look at a single gene across the groups:
-
-```
-        plotCounts(dds, gene=which.min(resLFC$padj), intgroup="source_name")
-```
-
-
-> Exercise
-> --------
-> 
-> Can you find a gene of interest within your chromosomes and paper that you would like to plot in a plot like above? Or using ggplot like in the code below (note you will have to adapt this to your paper?
->
-```
-        d <- plotCounts(dds, gene=which.min(resLFC$padj), intgroup="source_name", 
-                        returnData=TRUE)
-        ggplot(d, aes(x=condition, y=count)) + 
-          geom_point(position=position_jitter(w=0.1,h=0)) + 
-          scale_y_log10(breaks=c(25,100,400))
-  
-```
-
-
-> Exercise
->
-> ```
->        # Hierarchical clustering analysis
->        ## let's get the actual values for the first few genes
->        head(assay(rld))
->        ## now transpose those
->        t(head(assay(rld)))
->        ## now get the sample distances from the transpose of the whole thing
->        dist(t(assay(rld)))
->        sampledist <- dist(t(assay(rld)))
->        plot(hclust(sampledist))
->```
-![](../assets/img/dendrogram.png)
-
-
-
-Let's plot a heatmap that also visualised the similarity/dissimilarity across samples.
-
-```
-        # ?heatmap for help
-        sampledist
-        as.matrix(sampledist)
-        sampledistmat <- as.matrix(sampledist)
-        heatmap(sampledistmat)
-```
-![](../assets/img/heatmap.png)
-
-That's a horribly ugly default. You can change the built-in heatmap function, but others are better. 
-
-```
-        sampleDists <- dist(t(assay(rld)))
-        sampleDistMatrix <- as.matrix(sampleDists)
-        rownames(sampleDistMatrix) <- paste(rld$source_name)
-        colnames(sampleDistMatrix) <- NULL
-        colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
-        pheatmap(sampleDistMatrix,
-                 clustering_distance_rows=sampleDists,
-                 clustering_distance_cols=sampleDists,
-                 col=colors)
-
-        select <- order(rowMeans(counts(dds,normalized=TRUE)), decreasing=TRUE)[1:20]
-        df <- as.data.frame(colData(dds)[,c("source_name")])
-        pheatmap(assay(ntd)[select,], cluster_rows=FALSE, show_rownames=FALSE,
-                 cluster_cols=FALSE, annotation_col=df)
-
-```
-![](../assets/img/heatmap_gplots.png)
-
-
-
-> Exercise
-> 
-> Can you change values in the colour panel to make the heatmap more colorblind-friendly?
-> 
-
-
-Let's create a histogram of the p-values
-
-```
-        # Examine plot of p-values
-        hist(resLFC$pvalue, breaks=50, col="grey")
-```
-![](../assets/img/histogram_respvalue.png)
-
->Exercise
->
->Make a ggplot2 equivalent of the histogram above.
->
-
-
-## MAplot with annotations!!! Very exciting
-Let's remake the MA plot but this time 
-
-
-
-```
-        plot(resLFC$baseMean, resLFC$log2FoldChange, pch=16, cex=.5, log="x")
-        resLFC_subset <- subset(resLFC, padj<.05)
-        plot(resLFC_subset$baseMean, resLFC_subset$log2FoldChange, pch=16, cex=.5, log="x", col="red")       
-        resLFC$Gene <- rownames(resLFC)
-        head(resLFC)
-        textxy(resLFC_subset$baseMean, resLFC_subset$log2FoldChange, labs=resLFC$Gene, cex=1, col="red")
-```
-
-> Exercise
-> =========
-> Could you plot textxy but only with the top 10 most DEG
-
-
-Let's create a volcano plot. The volcano plot shows on shows the -log10pvalue (adjuted) against the logFC. The higher the value of the -log10pval, the greater the confidence in the log FC is not random.
-
-```
-par(pch=16)
-        res$Gene <- rownames(res)
-        with(res, plot(log2FoldChange, -log10(pvalue), main="Volcano plot"))
-        with(subset(res, padj<.05 ), points(log2FoldChange, -log10(pvalue), col="red"))
-        with(subset(res, abs(log2FoldChange)>2), points(log2FoldChange, -log10(pvalue), col="orange"))
-        with(subset(res, padj<.05 & abs(log2FoldChange)>2), points(log2FoldChange, -log10(pvalue), col="green"))
-
-        # Add legend
-        legend("topleft", legend=c("FDR<0.05", "|LFC|>2", "both"), pch=16, col=c("red","orange","green"))
-        # Label points
-        with(subset(res, padj<.05 & abs(log2FoldChange)>2), textxy(log2FoldChange, -log10(pvalue), labs=Gene, cex=1))
-```
-Every dot represents a gene (not an isoform). This is because we are using the transcriptome as the reference where each transcript name begins with “ENST”, we collapsed those counts from transcripts to gene. An example of a transcript that has a positive log FC due to being highly expressed in the heart, relative to the control cerebellum sample. It codes for a transcript of the gene, ENSG00000163217, [BMP10](http://asia.ensembl.org/Homo_sapiens/Gene/Summary?g=ENSG00000152977;r=3:147393422-147510293) which is a member of the secreted ligand of the TGF-beta (transforming growth factor-beta) superfamily of proteins that is key for embryonic cardiomyocyte proliferation.
-
-![](../assets/img/volcano.png)
-
-
-
-> Exercise
->-----------
->
->  Read about multifactor designs in the [DESeq2 vignette](http://www.bioconductor.org/packages/release/bioc/vignettes/DESeq2/inst/doc/DESeq2.pdf) for cases where you have multiple variables of interest (e.g. irradiated vs controls in multiple tissue types).
-
-
-
-
-
-
-
-
-
-Beginning section Edited from [Training-modules](https://github.com/hbctraining/Training-modules) 
